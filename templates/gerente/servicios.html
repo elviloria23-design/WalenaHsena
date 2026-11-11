@@ -1,0 +1,107 @@
+{% extends 'base_gerente.html' %}
+{% block title %}Gestión de Servicios Adicionales - Walena Hotel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom border-secondary">
+    <h1 class="h2 fw-bold text-walena-dark">Gestión de Servicios Adicionales</h1>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row g-4">
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-lg rounded-4 p-4 bg-walena-dark border-walena text-white">
+            <h5 class="fw-bold text-walena-gold mb-3"><i class="bi bi-plus-circle me-2"></i> Nuevo Servicio</h5>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="nombre" class="form-label fw-semibold text-white small">Nombre del Servicio</label>
+                    <input type="text" class="form-control form-control-walena" id="nombre" name="nombre" required placeholder="Ej. Desayuno Buffet">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label fw-semibold text-white small">Descripción</label>
+                    <textarea class="form-control form-control-walena" id="descripcion" name="descripcion" rows="3" placeholder="Detalles del servicio..."></textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="precio" class="form-label fw-semibold text-white small">Precio ($)</label>
+                    <input type="number" step="0.01" class="form-control form-control-walena" id="precio" name="precio" required placeholder="0.00">
+                </div>
+                
+                <button type="submit" class="btn btn-walena-gold w-100 py-2 shadow-sm rounded-3">
+                    <i class="bi bi-check-lg me-1"></i> Guardar Servicio
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-walena-dark border-walena">
+            <div class="card-header border-bottom border-secondary py-3 px-4 bg-walena-darker">
+                <h5 class="m-0 fw-bold text-white"><i class="bi bi-list-check me-2 text-walena-gold"></i> Servicios Disponibles</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 text-white border-walena bg-walena-dark">
+                        <thead class="bg-walena-darker fs-7 text-uppercase">
+                            <tr class="align-middle">
+                                <th class="py-3 px-4 bg-transparent text-walena-gold text-nowrap" style="width: 60px;">#</th>
+                                <th class="bg-transparent text-walena-gold text-nowrap">Nombre</th>
+                                <th class="bg-transparent text-walena-gold text-nowrap">Descripción</th>
+                                <th class="bg-transparent text-walena-gold text-nowrap">Precio</th>
+                                <th class="bg-transparent text-walena-gold text-nowrap">Estado</th>
+                                <th class="text-end px-4 bg-transparent text-walena-gold text-nowrap">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="border-top-0 bg-walena-dark">
+                            {% for servicio in servicios %}
+                            <tr class="bg-walena-dark border-bottom border-walena">
+                                <td class="py-3 px-4 bg-transparent">
+                                    <span class="fw-bold text-walena-gold">#{{ forloop.counter }}</span>
+                                </td>
+                                <td class="text-white fw-medium bg-transparent">{{ servicio.nombre }}</td>
+                                <td class="text-white-50 bg-transparent small">{{ servicio.descripcion|default:"Sin descripción" }}</td>
+                                <td class="text-success fw-bold bg-transparent">${{ servicio.precio|floatformat:2 }}</td>
+                                <td class="bg-transparent">
+                                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-2 py-1">Activo</span>
+                                </td>
+                                <td class="text-end px-4 bg-transparent">
+                                    <div class="d-inline-flex gap-1">
+                                        <a href="#" class="btn btn-sm btn-outline-warning px-2 py-1" title="Editar Servicio">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="#" method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger px-2 py-1" title="Eliminar Servicio" onclick="return confirm('¿Estás seguro de eliminar este servicio?');">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-white-50 py-5 bg-transparent">
+                                    <i class="bi bi-basket fs-2 d-block mb-2 text-walena-gold"></i>
+                                    No hay servicios activos registrados todavía.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

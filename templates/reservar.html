@@ -1,0 +1,408 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar reserva - Walena Hotel</title>
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+</head>
+<body class="bg-body text-body">
+
+    {% include 'inc/nav.html' %}
+
+    {% if messages %}
+    <div class="container mt-4">
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert" style="border-left: 5px solid #f2c14e !important;">
+                <i class="bi bi-info-circle-fill me-2" style="color: #00334e;"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="container py-5">
+        <div class="row g-4 align-items-start">
+
+            <div class="col-lg-6">
+                <div class="card border shadow-sm rounded-4 overflow-hidden mb-4 bg-body">
+                    
+                    <div id="carruselHabitacion" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Foto 1"></button>
+                            <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="1" aria-label="Foto 2"></button>
+                            <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="2" aria-label="Foto 3"></button>
+                            <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="3" aria-label="Foto 4"></button>
+                        </div>
+
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                {% if habitacion.foto1 %}
+                                    <img src="{{ habitacion.foto1.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto Principal" style="height: 320px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/atardecer2.jpg' %}" class="d-block w-100 galeria-habitacion-img" alt="Vista Principal" style="height: 320px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+
+                            <div class="carousel-item">
+                                {% if habitacion.foto2 %}
+                                    <img src="{{ habitacion.foto2.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto 2" style="height: 320px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/Riohachaaccl.png' %}" class="d-block w-100 galeria-habitacion-img" alt="Interior Habitación" style="height: 320px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+
+                            <div class="carousel-item">
+                                {% if habitacion.foto3 %}
+                                    <img src="{{ habitacion.foto3.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto 3" style="height: 320px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/atardecer2.jpg' %}" class="d-block w-100 galeria-habitacion-img" alt="Baño y Amenidades" style="height: 320px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+
+                            <div class="carousel-item">
+                                {% if habitacion.foto4 %}
+                                    <img src="{{ habitacion.foto4.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto 4" style="height: 320px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/atardecer2.jpg' %}" class="d-block w-100 galeria-habitacion-img" alt="Balcón / Vista al Mar" style="height: 320px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carruselHabitacion" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carruselHabitacion" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-2 text-primary-walena">
+                            {{ habitacion.tipo|default:"Habitación Walena" }} (#{{ habitacion.numero }})
+                        </h4>
+                        <p class="text-secondary small mb-3">
+                            Ubicada en el Piso {{ habitacion.piso }}. Capacidad máxima: <strong>{{ habitacion.cap_max }} personas</strong>.
+                        </p>
+                        
+                        <hr class="text-muted opacity-25 my-3">
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold text-secondary">Precio por noche:</span>
+                            <span class="badge badge-precio px-3 py-2 rounded" id="precioPorNoche">
+                                $160.650
+                            </span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 mt-3 border bg-body-tertiary">
+                            <span class="fw-bold text-primary-walena">Total Estimado (<span id="numNoches">1</span> noche/s):</span>
+                            <span class="fw-bold fs-5 text-success" id="precioTotal">
+                                $160.650
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border shadow-sm rounded-4 p-4 bg-body">
+                    <h4 class="fw-bold mb-3 text-primary-walena">Nuestra Ubicación</h4>
+                    <div id="mapa-walena" style="height: 350px; width: 100%; border-radius: 8px;"></div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border shadow-sm rounded-4 p-4 bg-body">
+                    <h3 class="fw-bold mb-1 text-primary-walena">Confirmar tu Reserva</h3>
+                    <p class="text-secondary small mb-3">
+                        Registrado como: <strong>{{ user.username }}</strong> ({{ user.email }})
+                    </p>
+
+                    <div class="card border rounded-3 p-3 my-3 bg-body-tertiary">
+                        <h6 class="fw-bold text-primary-walena mb-2">
+                            <i class="bi bi-clock-history me-1"></i> Horarios de Estancia
+                        </h6>
+                        <div class="row text-secondary small">
+                            <div class="col-6">
+                                <span class="d-block fw-semibold text-body">Check-in:</span>
+                                <i class="bi bi-box-arrow-in-right text-success me-1"></i> A partir de las 14:00
+                            </div>
+                            <div class="col-6">
+                                <span class="d-block fw-semibold text-body">Check-out:</span>
+                                <i class="bi bi-box-arrow-right text-danger me-1"></i> Hasta las 12:00
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" action="">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="precio_total" id="inputPrecioTotal">
+
+                        <div class="mb-4">
+                            <label for="checkin" class="form-label fw-semibold text-secondary mb-1">
+                                Fecha de Entrada (Check-in)
+                            </label>
+                            <div class="input-reserva-wrapper">
+                                <i class="bi bi-calendar-event icon-input"></i>
+                                <input type="date" class="form-control" id="checkin" name="checkin" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="checkout" class="form-label fw-semibold text-secondary mb-1">
+                                Fecha de Salida (Check-out)
+                            </label>
+                            <div class="input-reserva-wrapper">
+                                <i class="bi bi-calendar2-check icon-input"></i>
+                                <input type="date" class="form-control" id="checkout" name="checkout" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="adultos" class="form-label fw-semibold text-secondary mb-1">
+                                    Adultos (5 años en adelante)
+                                </label>
+                                <div class="input-reserva-wrapper">
+                                    <i class="bi bi-person icon-input"></i>
+                                    <select class="form-select" id="adultos" name="adultos" required>
+                                        <option value="1" selected>1 Adulto</option>
+                                        <option value="2">2 Adultos</option>
+                                        <option value="3">3 Adultos</option>
+                                        <option value="4">4 Adultos</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="ninos" class="form-label fw-semibold text-secondary mb-1">
+                                    Niños (De 0 a 4 años)
+                                </label>
+                                <div class="input-reserva-wrapper">
+                                    <i class="bi bi-emoji-smile icon-input"></i>
+                                    <select class="form-select" id="ninos" name="ninos" required>
+                                        <option value="0" selected>0 Niños</option>
+                                        <option value="1">1 Niño</option>
+                                        <option value="2">2 Niños</option>
+                                        <option value="3">3 Niños</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="alertaHuespedes" class="alert alert-warning py-2 small d-none mb-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> El límite máximo total permitido es de 4 huéspedes por habitación.
+                        </div>
+
+                        <button type="submit" id="btnReservar" class="btn btn-warning text-dark fw-bold w-100 py-2 rounded-pill shadow-sm">
+                            Confirmar y Reservar
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Scripts de Bootstrap, Leaflet y Flatpickr -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script src="{% static 'js/theme.js' %}"></script>
+
+    <!-- Inicialización del Carrusel -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var elCarrusel = document.getElementById('carruselHabitacion');
+            if (elCarrusel) {
+                new bootstrap.Carousel(elCarrusel, {
+                    interval: 3000,
+                    ride: 'carousel'
+                });
+            }
+        });
+    </script>
+
+    <!-- Inicialización del Mapa de Leaflet con ajuste exacto -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var latitud = 11.54045; 
+            var longitud = -72.91670;
+
+            var map = L.map('mapa-walena').setView([latitud, longitud], 17);
+
+            L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '&copy; Google Maps'
+            }).addTo(map);
+
+            var marker = L.marker([latitud, longitud]).addTo(map);
+            marker.bindPopup("<b>Walena Hotel</b><br>Riohacha, La Guajira").openPopup();
+
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 300);
+        });
+    </script>
+
+    <!-- Lógica de Precios, Fechas, Huéspedes y Validación -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectAdultos = document.getElementById('adultos');
+            const selectNinos = document.getElementById('ninos');
+            const alerta = document.getElementById('alertaHuespedes');
+            const btnReservar = document.getElementById('btnReservar');
+            
+            const spanPrecioNoche = document.getElementById('precioPorNoche');
+            const spanPrecioTotal = document.getElementById('precioTotal');
+            const spanNumNoches = document.getElementById('numNoches');
+
+            const tarifasAdultos = {
+                1: 160650,
+                2: 220150,
+                3: 279650,
+                4: 339150
+            };
+
+            function formatearMoneda(valor) {
+                return '$' + valor.toLocaleString('es-CO');
+            }
+
+            function validarHuespedes() {
+                const adultos = parseInt(selectAdultos.value) || 0;
+                const ninos = parseInt(selectNinos.value) || 0;
+                const total = adultos + ninos;
+
+                Array.from(selectNinos.options).forEach(option => {
+                    const valNino = parseInt(option.value);
+                    if (adultos + valNino > 4) {
+                        option.disabled = true;
+                    } else {
+                        option.disabled = false;
+                    }
+                });
+
+                if (total > 4) {
+                    alerta.classList.remove('d-none');
+                    if (btnReservar) btnReservar.disabled = true;
+                } else {
+                    alerta.classList.add('d-none');
+                    if (btnReservar) btnReservar.disabled = false;
+                }
+            }
+
+            function calcularPrecio() {
+                const adultos = parseInt(selectAdultos.value) || 1;
+                const precioBaseNoche = tarifasAdultos[adultos] || parseFloat("{{ habitacion.precio_noche|default:160650 }}") || 160650;
+
+                let noches = 1;
+                const inputCheckin = document.getElementById('checkin').value;
+                const inputCheckout = document.getElementById('checkout').value;
+
+                if (inputCheckin && inputCheckout) {
+                    const fechaIn = new Date(inputCheckin);
+                    const fechaOut = new Date(inputCheckout);
+                    const diferenciaTiempo = fechaOut - fechaIn;
+                    const diferenciaDias = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
+                    if (diferenciaDias > 0) {
+                        noches = diferenciaDias;
+                    }
+                }
+
+                const totalEstancia = precioBaseNoche * noches;
+
+                spanPrecioNoche.textContent = formatearMoneda(precioBaseNoche);
+                spanNumNoches.textContent = noches;
+                spanPrecioTotal.textContent = formatearMoneda(totalEstancia);
+
+                const inputPrecioTotal = document.getElementById('inputPrecioTotal');
+                if (inputPrecioTotal) {
+                    inputPrecioTotal.value = totalEstancia;
+                }
+            }
+
+            const fpCheckin = flatpickr("#checkin", {
+                locale: "es",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d/m/Y",
+                altInputClass: "form-control",
+                required: true,
+                onChange: function(selectedDates, dateStr) {
+                    if (selectedDates[0]) {
+                        const diaSiguiente = new Date(selectedDates[0]);
+                        diaSiguiente.setDate(diaSiguiente.getDate() + 1);
+                        fpCheckout.set('minDate', diaSiguiente);
+                        fpCheckout.open();
+                    }
+                    calcularPrecio();
+                }
+            });
+
+            const fpCheckout = flatpickr("#checkout", {
+                locale: "es",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d/m/Y",
+                altInputClass: "form-control",
+                required: true,
+                onChange: function() {
+                    calcularPrecio();
+                }
+            });
+
+            if (selectAdultos && selectNinos) {
+                selectAdultos.addEventListener('change', function() {
+                    validarHuespedes();
+                    calcularPrecio();
+                });
+                selectNinos.addEventListener('change', function() {
+                    validarHuespedes();
+                });
+                validarHuespedes();
+                calcularPrecio();
+            }
+
+            const formReserva = document.querySelector('form');
+
+            if (formReserva) {
+                formReserva.addEventListener('submit', function (e) {
+                    const checkinVal = document.getElementById('checkin').value;
+                    const checkoutVal = document.getElementById('checkout').value;
+
+                    if (!checkinVal || !checkoutVal) {
+                        e.preventDefault();
+                        alert('Por favor selecciona las fechas de entrada y salida antes de continuar.');
+                        return;
+                    }
+
+                    const btnReservar = document.getElementById('btnReservar');
+                    if (btnReservar) {
+                        btnReservar.disabled = true;
+                        btnReservar.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Procesando...';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

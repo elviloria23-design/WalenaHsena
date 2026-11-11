@@ -1,0 +1,1742 @@
+html {
+    overflow-y: scroll;
+}
+
+.navbar-walena {
+    background-color: #00334e;
+    background-image: url('/static/img/navbarimg.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: center 50% !important; 
+    background-size: cover !important; 
+    min-height: 140px; 
+    width: 100%;
+    position: relative;
+}
+
+.navbar-walena .nav-link {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9) !important;
+}
+
+.navbar-walena .nav-link:hover {
+    color: #f2c14e !important;
+}
+
+.text-walena {
+    color: #00334e;
+}
+
+.btn-walena-amarillo {
+    background-color: #f2c14e !important; /* El color amarillo exacto de tu botón de reservar */
+    color: #212529 !important; /* Texto oscuro para que resalte perfecto */
+    border: 1px solid #e0b03e !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.btn-walena-amarillo:hover {
+    background-color: #e0b03e !important; /* Se pone un toque más intenso al pasar el mouse, igual que tu tarjeta */
+    color: #000000 !important;
+    border-color: #cca033 !important;
+    transform: translateY(-1px);
+}
+
+.titulo-seccion {
+    color: #00334e !important;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.subtitulo-seccion {
+    color: #556b73 !important;
+    font-size: 1.1rem;
+}
+
+/* Línea decorativa dorada/naranja */
+.linea-decorativa {
+    width: 200px;
+    height: 4px;
+    background-color: #f2c14e !important;
+    border-radius: 2px;
+}
+
+/* Tarjeta contenedora */
+.card-preferirnos {
+    background-color: #ffffff;
+    border-radius: 15px;
+}
+
+/* Textos destacados */
+.lead-texto {
+    color: #333333;
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+.destacado {
+    color: #00334e;
+    font-weight: 700;
+}
+
+.destacado-destino {
+    color: #00334e;
+}
+
+/* Cuadros de servicios */
+.item-servicio {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.item-servicio:hover {
+    transform: translateY(-5px);
+    background-color: #ebebeb;
+}
+
+/* Badge del slogan */
+.badge-slogan {
+    background-color: #e6e6e6;
+    color: #474747;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================
+    VISTA DE LOGIN - WALENA HOTEL
+   ========================================== */
+
+.logo-img {
+    max-width: 220px;
+    height: auto;
+    display: inline-block;
+    filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.6));
+}
+
+.login-page {
+    background: url('../img/atardecer2.jpg') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+}
+
+.login-overlay {
+    background: rgba(0, 0, 0, 0.25);
+    min-height: 100vh;
+}
+
+/* Tipografía de la marca izquierda */
+.brand-title {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 0.8;
+    background: linear-gradient(135deg, #00d2ff, #f2c14e);
+    background-clip: text; 
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent;
+    color: transparent; 
+    display: inline-block; 
+}
+
+.brand-subtext {
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    letter-spacing: 2px;
+}
+
+.brand-hotel {
+    font-size: 1rem;
+    letter-spacing: 6px;
+    color: #f2c14e;
+}
+
+.slogan-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.3rem;
+    color: #f2c14e;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+/* Tarjeta de Login */
+.card-login {
+    background: rgba(15, 28, 42, 0.92) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+
+.border-gold {
+    border: 2px solid #f2c14e !important;
+}
+
+/* Campos de entrada oscuros */
+.custom-input-group {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.custom-input-group:focus-within {
+    border-color: #f2c14e;
+    box-shadow: 0 0 8px rgba(242, 193, 78, 0.4);
+}
+
+.custom-input {
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+    padding: 12px 12px 12px 0;
+    font-size: 0.95rem;
+}
+
+.custom-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.custom-input:focus {
+    box-shadow: none !important;
+}
+
+/* Botón Dorado */
+.btn-gold {
+    background: linear-gradient(135deg, #f2c14e 0%, #d49c24 100%);
+    color: #0d1b2a;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    background: linear-gradient(135deg, #ffe082 0%, #f2c14e 100%);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(242, 193, 78, 0.4);
+}
+
+.account-prompt {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Enlace de registro */
+.register-link {
+    color: #f2c14e;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.register-link:hover {
+    color: #ffe082;
+    text-decoration: underline;
+}
+
+/* Alertas */
+.card-login .alert-danger {
+    background-color: rgba(220, 53, 69, 0.25);
+    border: 1px solid rgba(220, 53, 69, 0.5);
+    color: #ff858d;
+    border-radius: 10px;
+}
+
+.card-login .alert-success {
+    background-color: rgba(25, 135, 84, 0.25);
+    border: 1px solid rgba(25, 135, 84, 0.5);
+    color: #75b798;
+    border-radius: 10px;
+}
+
+/* ==========================================
+    PALETA Y CATÁLOGO WALENA (FONDO CLARO)
+   ========================================== */
+:root {
+    --walena-gold: #f2c14e;
+    --walena-orange: #d97706;
+    --walena-navy: #00334e;
+    --walena-dark: #212529;
+}
+
+/* Título de la sección con contraste oscuro */
+.titulo-atardecer {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-weight: 800 !important;
+    color: #00334e !important;
+    letter-spacing: 0.5px;
+    background: none !important;
+    -webkit-text-fill-color: initial !important;
+}
+
+.titulo-atardecer span {
+    color: #d97706 !important;
+}
+
+/* Tarjetas en fondo claro */
+.card-glass {
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-glass:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(242, 193, 78, 0.25) !important;
+    border-color: #f2c14e !important;
+}
+
+.card-glass .card-text {
+    color: #495057 !important;
+}
+
+/* Caja de íconos de servicios en crema con íconos visibles */
+.box-iconos-servicios {
+    background-color: #fff8e7 !important;
+    border: 1px solid rgba(242, 193, 78, 0.4) !important;
+}
+
+.box-iconos-servicios i, 
+.box-iconos-servicios span {
+    color: #b45309 !important; /* Fuerza el color oscuro visibilísimo en los íconos */
+}
+
+/* Botón dorado */
+.btn-walena-gold {
+    background-color: #f2c14e !important;
+    color: #00334e !important;
+    font-weight: 700;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-walena-gold:hover {
+    background-color: #f39c12 !important;
+    color: #ffffff !important;
+}
+
+/* Badge de precio */
+.badge-precio {
+    background-color: #00334e !important;
+    color: #f2c14e !important;
+    font-weight: 700;
+}
+
+/* ==========================================
+    GALERÍA E INTERACTIVIDAD DE FOTOS
+   ========================================== */
+
+.galeria-img {
+    height: 220px;
+    width: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.galeria-img:hover {
+    transform: scale(1.03);
+    filter: brightness(0.9);
+}
+
+/* Visor Modal con Fondo Borroso */
+.visor-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.visor-modal.activo {
+    display: flex;
+}
+
+/* Overlay/Fondo borroso */
+.visor-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+}
+
+/* Imagen Ampliada */
+.visor-contenido {
+    position: relative;
+    z-index: 10000;
+    max-width: 85%;
+    max-height: 80vh;
+}
+
+.visor-contenido img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    object-fit: contain;
+}
+
+/* Botón X Encerrada en Círculo */
+.btn-cerrar {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    z-index: 10001;
+    background: transparent;
+    border: none;
+    color: #f2c14e;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.btn-cerrar:hover {
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+/* Botones NAVEGACIÓN (< y >) */
+.btn-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10001;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #f2c14e;
+    color: #f2c14e;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-nav:hover {
+    background: #f2c14e;
+    color: #00334e;
+}
+
+.btn-prev { left: 25px; }
+.btn-next { right: 25px; }
+
+/* Estilo Folletos Turísticos */
+.folleto-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+.folleto-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15) !important;
+}
+
+/* Tarjetas del catálogo de habitaciones */
+.card-habitacion {
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: #ffffff;
+}
+
+.card-habitacion:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Insignia de precio */
+.badge-precio {
+    background-color: #00334e !important;
+    color: #f2c14e !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Botón dorado institucional */
+.btn-walena-gold {
+    background-color: #f2c14e !important;
+    color: #00334e !important;
+    border: none;
+    font-weight: 600;
+}
+
+.btn-walena-gold:hover {
+    background-color: #e0b03e !important;
+    color: #002233 !important;
+}
+
+/* Caja de íconos de servicios */
+.iconos-servicios {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.galeria-habitacion-img {
+    height: 320px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #f2c14e !important;
+    box-shadow: 0 0 0 0.25rem rgba(242, 193, 78, 0.25) !important;
+}
+
+.badge-reserva-precio {
+    background-color: #00334e !important;
+    color: #f2c14e !important;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.input-reserva-wrapper {
+    position: relative;
+}
+
+.input-reserva-wrapper .form-control,
+.input-reserva-wrapper .form-select {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 16px 12px 42px;
+    font-weight: 500;
+    color: #00334e;
+    background-color: #f8fafc;
+    transition: all 0.25s ease-in-out;
+}
+
+/* Íconos flotantes dentro de los campos */
+.input-reserva-wrapper .icon-input {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: #00334e;
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* Efecto al pasar el cursor y al hacer foco */
+.input-reserva-wrapper .form-control:hover,
+.input-reserva-wrapper .form-select:hover {
+    border-color: #cbd5e1;
+    background-color: #ffffff;
+}
+
+.input-reserva-wrapper .form-control:focus,
+.input-reserva-wrapper .form-select:focus {
+    border-color: #f2c14e !important;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(242, 193, 78, 0.2) !important;
+    outline: none;
+}
+
+/* Personalización del ícono del calendario del navegador */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 2px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* --- PERSONALIZACIÓN COMPLETA DEL CALENDARIO FLATPICKR --- */
+.flatpickr-calendar {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0, 51, 78, 0.15) !important;
+    border: 1px solid #e2e8f0 !important;
+    font-family: inherit !important;
+}
+
+/* Cabecera del mes y días */
+.flatpickr-months {
+    background-color: #00334e !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 6px 0 !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year,
+.flatpickr-months .flatpickr-month,
+.flatpickr-months .flatpickr-prev-month, 
+.flatpickr-months .flatpickr-next-month {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+}
+
+span.flatpickr-weekday {
+    background-color: #00334e !important;
+    color: #f2c14e !important;
+    font-weight: 700 !important;
+}
+
+/* Día seleccionado */
+.flatpickr-day.selected, 
+.flatpickr-day.selected:hover {
+    background: #f2c14e !important;
+    color: #00334e !important;
+    border-color: #f2c14e !important;
+    font-weight: bold !important;
+}
+
+/* Día al pasar el ratón */
+.flatpickr-day:hover {
+    background: #e2e8f0 !important;
+}
+
+/* Día de hoy */
+.flatpickr-day.today {
+    border-color: #00334e !important;
+}
+
+/* --- CORRECCIÓN PERFECTA DEL DESPLEGABLE DE MESES --- */
+.flatpickr-monthDropdown-months {
+    background-color: #00334e !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Opciones dentro del menú desplegable de meses */
+.flatpickr-monthDropdown-months option {
+    background-color: #00334e !important;
+    color: #ffffff !important;
+    padding: 6px;
+}
+
+/* Opción seleccionada o al pasar el ratón */
+.flatpickr-monthDropdown-months option:hover,
+.flatpickr-monthDropdown-months option:checked {
+    background-color: #f2c14e !important;
+    color: #00334e !important;
+    font-weight: bold;
+}
+
+/* --- ESTILIZADO DE LAS OPCIONES DEL SELECT DE HUÉSPEDES --- */
+.input-reserva-wrapper select option {
+    background-color: #ffffff;
+    color: #00334e;
+    padding: 10px 14px;
+    font-size: 1rem;
+}
+
+/* Color cuando se pasa el cursor o se selecciona una opción */
+.input-reserva-wrapper select option:hover,
+.input-reserva-wrapper select option:checked,
+.input-reserva-wrapper select option:focus {
+    background-color: #00334e !important;
+    color: #f2c14e !important;
+    font-weight: 600;
+}
+
+/* --- ESTILOS EXTERNOS PARA EL PANEL DE GERENCIA --- */
+.sidebar-gerente {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    background-color: #00334e !important;
+}
+
+.sidebar-gerente .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    padding: 12px 20px;
+    transition: all 0.3s;
+}
+
+.sidebar-gerente .nav-link:hover, 
+.sidebar-gerente .nav-link.active {
+    color: #f2c14e !important;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-gerente .nav-link i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.badge-gerente-rol {
+    background-color: #f2c14e !important;
+    color: #00334e !important;
+    font-weight: bold;
+}
+
+.main-content-gerente {
+    margin-left: 260px;
+    padding: 30px;
+}
+
+@media (max-width: 768px) {
+    .sidebar-gerente { 
+        position: static; 
+        height: auto; 
+        padding-top: 0; 
+    }
+    .main-content-gerente { 
+        margin-left: 0; 
+    }
+}
+
+/* ==========================================
+DASHBOARD GERENCIAL - WALENA HOTEL
+   ========================================== */
+
+/* ==========================================
+    AJUSTES RESPONSIVOS PARA MÓVILES
+   ========================================== */
+
+/* 1. Corrección del encabezado y botón en teléfonos */
+.dashboard-header {
+    background: linear-gradient(135deg, #002235 0%, #004466 100%);
+    border-radius: 16px;
+    color: #ffffff;
+    padding: 1.25rem 1.25rem; /* Menor relleno en celular para ganar espacio */
+    box-shadow: 0 10px 25px rgba(0, 51, 78, 0.15);
+}
+
+/* El botón no pierde su forma redonda ni se deforma */
+.dashboard-header .btn-warning {
+    white-space: nowrap;
+    border-radius: 50px !important;
+}
+
+.dashboard-header, .header-seccion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 2. Aprovechamiento completo del ancho en pantalla móvil */
+@media (max-width: 767.98px) {
+    /* Ajustamos el relleno del contenedor principal en celulares */
+    .main-content-gerente .container-fluid {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    /* Reducimos el margen interno del topbar */
+    .topbar-gerente {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* Ajuste de títulos para que no se corten */
+    .dashboard-header h2 {
+        font-size: 1.5rem;
+    }
+}
+.kpi-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 16px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+}
+
+.kpi-icon-wrapper {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+/* Variaciones de Acentos */
+.kpi-accent-gold { background: rgba(242, 193, 78, 0.15); color: #d99b00; }
+.kpi-accent-blue { background: rgba(0, 102, 204, 0.1); color: #0066cc; }
+.kpi-accent-green { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+.kpi-accent-teal { background: rgba(23, 162, 184, 0.1); color: #17a2b8; }
+
+.content-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.quick-action-btn {
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+.quick-action-btn:hover {
+    background: #00334e;
+    color: #ffffff;
+    border-color: #00334e;
+}
+
+.custom-table th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.chart-container-wrapper {
+    max-width: 220px;
+    margin: 0 auto;
+}
+
+.brand-dark-text {
+    color: #00334e;
+}
+
+/* ==========================================
+    BARRA LATERAL IZQUIERDA (SIDEBAR GERENCIA)
+   ========================================== */
+
+.sidebar-gerente {
+    background: #001826;
+    min-height: 100vh;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+}
+
+.sidebar-wrapper {
+    padding: 1.5rem 1rem;
+    position: sticky;
+    top: 0;
+}
+
+.brand-logo-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.brand-title {
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    font-size: 1.1rem;
+}
+
+.badge-gerente-rol {
+    background-color: rgba(242, 193, 78, 0.15);
+    color: #f2c14e;
+    border: 1px solid rgba(242, 193, 78, 0.3);
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    padding: 0.4em 0.8em;
+    border-radius: 20px;
+}
+
+/* Estado Normal de los Enlaces */
+.sidebar-nav .nav-link {
+    color: #94a3b8;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav .nav-link i {
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+    color: #94a3b8;
+}
+
+/* Efecto Hover */
+.sidebar-nav .nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-nav .nav-link:hover i {
+    transform: translateX(3px);
+    color: #ffffff;
+}
+
+/* Estado ACTIVO - Forzamos legibilidad completa */
+.sidebar-nav .nav-link.active,
+.sidebar-nav .nav-link.active i,
+.sidebar-nav .nav-link.active span {
+    color: #001826 !important;
+    background-color: #f2c14e !important;
+    font-weight: 700 !important;
+}
+
+.sidebar-nav .nav-link.active {
+    box-shadow: 0 4px 12px rgba(242, 193, 78, 0.3);
+}
+
+.sidebar-nav .nav-link.active:hover,
+.sidebar-nav .nav-link.active:hover i,
+.sidebar-nav .nav-link.active:hover span {
+    color: #001826 !important;
+    background-color: #e5b33d !important;
+}
+
+/* Divisor y Enlaces Especiales */
+.sidebar-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-nav .nav-link-external {
+    color: #38bdf8;
+}
+
+.sidebar-nav .nav-link-external i {
+    color: #38bdf8;
+}
+
+.sidebar-nav .nav-link-logout {
+    color: #f87171;
+}
+
+.sidebar-nav .nav-link-logout i {
+    color: #f87171;
+}
+
+.sidebar-nav .nav-link-logout:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.sidebar-nav .nav-link-logout:hover i {
+    color: #ef4444;
+}
+
+/* Menú Desplegable del Perfil en Topbar */
+.topbar-gerente .dropdown-menu {
+    min-width: 200px;
+    z-index: 1050;
+}
+
+.topbar-gerente .dropdown-item:active {
+    background-color: #00334e;
+    color: #ffffff;
+}
+
+.avatar-circle i {
+    transition: transform 0.2s ease;
+}
+
+.topbar-gerente button:hover .avatar-circle i {
+    transform: scale(1.1);
+    color: #00334e !important;
+}
+
+/* Botón de Reportes en el Banner */
+.btn-reporte-header {
+    white-space: nowrap;
+    width: auto !important; /* Mantiene el tamaño compacto según el texto */
+}
+
+@media (max-width: 575.98px) {
+    .btn-reporte-header {
+        width: 100% !important; /* En teléfonos se ajusta al ancho del contenedor sin estirarse raro */
+    }
+}
+
+.visor-modal, #visorFotos {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5) !important; /* Fondo semi-transparente */
+    backdrop-filter: blur(10px) !important;          /* Efecto borroso */
+    -webkit-backdrop-filter: blur(10px) !important;  /* Compatibilidad con Safari */
+    z-index: 1050;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Cuando se abre el visor */
+.visor-modal.activo, #visorFotos.activo {
+    display: flex !important;
+}
+
+/* Contenedor de la foto */
+.visor-contenido {
+    position: relative;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+/* Forzar a la imagen a expandirse grande y nítida */
+#fotoAmpliada {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 85vw !important;
+    max-height: 85vh !important;
+    object-fit: contain !important;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Ocultar flechas de incremento/decremento en inputs numéricos */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Estilo oscuro y limpio para los inputs de archivos */
+input[type="file"] {
+    background-color: #0f172a !important;
+    color: #94a3b8 !important;
+    border-color: #334155 !important;
+}
+input[type="file"]::file-selector-button {
+    background-color: #334155;
+    color: #ffffff;
+    border: none;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.2s;
+}
+input[type="file"]::file-selector-button:hover {
+    background-color: #475569;
+}
+
+/* Forzar estado normal y oscuro en inputs de tipo file */
+input[type="file"].form-control,
+input[type="file"] {
+    background-color: #0f172a !important;
+    color: #94a3b8 !important;
+    border-color: #334155 !important;
+}
+
+/* Evitar que se pongan blancos al hacer clic o enfocarlos */
+input[type="file"].form-control:focus,
+input[type="file"]:focus {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    border-color: #f2c14e !important;
+    box-shadow: none !important;
+}
+
+/* Mantener el botón interno oscuro en hover */
+input[type="file"]::file-selector-button {
+    background-color: #334155 !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background-color: #475569 !important;
+    color: #ffffff !important;
+}
+
+/* Color visible para los placeholders en inputs oscuros */
+.modal-content .form-control::placeholder,
+.modal-content .form-select::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+    opacity: 1; /* Necesario para Firefox */
+}
+
+/* Opcional: Asegurar que el texto que escribe el usuario se vea completamente blanco */
+.modal-content .form-control,
+.modal-content .form-select {
+    color: #ffffff !important;
+}
+
+/* Fondo general de tarjetas unificado */
+.bg-walena-dark {
+    background-color: #00334e !important;
+}
+
+/* Cabeceras o áreas internas */
+.bg-walena-darker {
+    background-color: #002233 !important;
+}
+
+/* Bordes */
+.border-walena {
+    border-color: #004d73 !important;
+}
+
+.text-walena-gold {
+    color: #f2c14e !important;
+}
+
+.btn-walena-gold {
+    background-color: #f2c14e !important;
+    color: #00334e !important;
+    font-weight: bold;
+}
+
+/* Campos de formulario unificados con el mismo color y excelente contraste */
+.form-control-walena {
+    background-color: #002233 !important;
+    color: #ffffff !important;
+    border-color: #004d73 !important;
+}
+
+.form-control-walena::placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+.form-control-walena:focus {
+    background-color: #002233 !important;
+    color: #ffffff !important;
+    border-color: #f2c14e !important;
+    box-shadow: 0 0 0 0.25rem rgba(242, 193, 78, 0.25);
+}
+
+/* Insignia o etiqueta dorada corporativa Walena */
+.badge-walena-gold {
+    background-color: #f2c14e !important;
+    color: #00334e !important;
+    font-weight: bold !important;
+}
+
+.btn-walena-filter {
+    background-color: #002233 !important;
+    color: #ffffff !important;
+    border: 1px solid #004d73 !important;
+    position: relative;
+    font-weight: bold !important;
+    text-align: center !important;
+}
+
+/* El ancho mínimo fijo solo actúa en tablets y computadoras (manteniéndolos estables allí) */
+@media (min-width: 768px) {
+    .btn-walena-filter {
+        min-width: 140px;
+    }
+}
+
+/* Puedes eliminar o dejar el ::after, pero con el min-width ya no hará falta */
+.btn-walena-filter::after {
+    content: attr(data-text);
+    font-weight: bold;
+    height: 0;
+    visibility: hidden;
+    display: block;
+    overflow: hidden;
+}
+
+.btn-walena-filter:hover, .btn-walena-filter.active {
+    background-color: #f2c14e !important;
+    color: #00334e !important;
+    border-color: #f2c14e !important;
+}
+
+/* Paginación corporativa */
+.pagination-walena .page-link {
+    background-color: #002233 !important;
+    color: #ffffff !important;
+    border-color: #004d73 !important;
+}
+.pagination-walena .page-item.active .page-link {
+    background-color: #f2c14e !important;
+    color: #00334e !important;
+    font-weight: bold;
+    border-color: #f2c14e !important;
+}
+.pagination-walena .page-link:hover {
+    background-color: #004d73 !important;
+    color: #f2c14e !important;
+}
+
+.form-select-walena {
+    background-color: #002233 !important;
+    color: #ffffff !important;
+    border-color: #004d73 !important;
+}
+.form-select-walena option {
+    background-color: #002233 !important;
+    color: #ffffff !important;
+}
+
+/* Forzar el icono de fecha (calendario) a color claro en inputs tipo date */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23f2c14e" class="bi bi-calendar" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>');
+    cursor: pointer;
+    opacity: 1;
+    filter: none;
+}
+
+/* Sincronizar el esquema de color del input de fecha con el fondo oscuro Walena */
+input[type="date"] {
+    color-scheme: dark;
+}
+
+::-webkit-datetime-edit-fields-wrapper {
+    background: transparent;
+}
+
+::-webkit-calendar-picker-indicator {
+    background-color: transparent;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+/* Refuerzo para el esquema de color oscuro del componente de fecha */
+input[type="date"] {
+    color-scheme: dark !important;
+}
+
+/* Asegura que todos los botones de filtro tengan un ancho mínimo uniforme y no se muevan */
+.nav-pills .nav-link, .btn-filtro-estado {
+    min-width: 130px; /* Ajusta este valor según el texto más largo (ej. "Confirmadas") */
+    text-align: center;
+    display: inline-block;
+}
+
+:root {
+    --bg-principal: #ffffff;
+    --texto-principal: #212529;
+    --card-bg: #ffffff;
+    --border-color: #dee2e6;
+}
+
+[data-bs-theme="dark"] {
+    --bg-principal: #12181f; /* Fondo oscuro elegante */
+    --texto-principal: #f8f9fa;
+    --card-bg: #1e293b;     /* Fondo de tarjetas oscuras */
+    --border-color: #334155;
+}
+
+body {
+    background-color: var(--bg-principal) !important;
+    color: var(--texto-principal) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-bs-theme="dark"] .card {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--texto-principal) !important;
+}
+
+/* Estilos para las tarjetas de reservas */
+.reservation-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.reservation-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.15) !important;
+}
+
+/* ================= MODO CLARO ================= */
+[data-bs-theme="light"] body {
+    background-color: #f8f9fa !important;
+    color: #1a1a1a !important;
+}
+
+[data-bs-theme="light"] .card-body p,
+[data-bs-theme="light"] .card-body span:not(.badge):not(.text-success),
+[data-bs-theme="light"] .card-body small,
+[data-bs-theme="light"] .card-body div,
+[data-bs-theme="light"] .card-body strong,
+[data-bs-theme="light"] .text-secondary {
+    color: #1a1a1a !important;
+}
+
+[data-bs-theme="light"] .card-body .text-success { 
+    color: #198754 !important; 
+}
+
+/* Contraste para el badge "Estancia Registrada" en Modo Claro */
+[data-bs-theme="light"] .badge.border-warning {
+    color: #854d0e !important;          
+    background-color: #fef9c3 !important; 
+    border-color: #ca8a04 !important;    
+}
+
+/* ================= MODO OSCURO ================= */
+[data-bs-theme="dark"] .card-body p,
+[data-bs-theme="dark"] .card-body span:not(.badge):not(.text-success),
+[data-bs-theme="dark"] .card-body small,
+[data-bs-theme="dark"] .card-body div,
+[data-bs-theme="dark"] .card-body strong {
+    color: #e2e8f0 !important; 
+}
+
+[data-bs-theme="dark"] .card-body .text-success { 
+    color: #2ecc71 !important; 
+}
+
+/* Subtítulo superior en modo oscuro */
+[data-bs-theme="dark"] .subtitulo-seccion {
+    color: #cbd5e1 !important; 
+}
+
+/* Botones de contorno en modo oscuro */
+[data-bs-theme="dark"] .btn-outline-secondary,
+[data-bs-theme="dark"] .btn-outline-dark {
+    color: #f8fafc !important;
+    border-color: #64748b !important;
+}
+[data-bs-theme="dark"] .btn-outline-secondary:hover,
+[data-bs-theme="dark"] .btn-outline-dark:hover {
+    background-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+
+/* Estilos específicos para la vista de Desayunos según el tema */
+/* Badge superior */
+[data-bs-theme="light"] .badge-desayuno {
+    background-color: #fff8e7 !important;
+    color: #d97706 !important;
+    border: 1px solid #e9ad17 !important;
+}
+[data-bs-theme="dark"] .badge-desayuno {
+    background-color: rgba(217, 119, 6, 0.15) !important;
+    color: #e9ad17 !important;
+    border: 1px solid rgba(251, 191, 36, 0.3) !important;
+}
+
+/* Título principal del encabezado */
+[data-bs-theme="light"] .titulo-principal {
+    color: #00334e !important;
+}
+[data-bs-theme="dark"] .titulo-principal {
+    color: #f8fafc !important;
+}
+
+/* Tarjeta / Alerta de horario */
+[data-bs-theme="light"] .alert-custom-horario {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+}
+[data-bs-theme="dark"] .alert-custom-horario {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+[data-bs-theme="light"] .titulo-horario {
+    color: #00334e !important;
+}
+[data-bs-theme="dark"] .titulo-horario {
+    color: #f8fafc !important;
+}
+
+/* Forzar que los párrafos y textos secundarios tengan excelente visibilidad en modo oscuro */
+[data-bs-theme="dark"] .text-secondary,
+[data-bs-theme="dark"] p {
+    color: #cbd5e1 !important; /* Un gris claro muy legible */
+}
+
+
+/* ================= VISTA CONTACTANOS ================= */
+[data-bs-theme="light"] .titulo-principal {
+    color: #00334e !important;
+}
+[data-bs-theme="dark"] .titulo-principal {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="light"] .subtitulo-contacto {
+    color: #00334e !important;
+}
+[data-bs-theme="dark"] .subtitulo-contacto {
+    color: #cbd5e1 !important;
+}
+
+/* Forzar etiquetas de los inputs claras en modo oscuro */
+[data-bs-theme="dark"] .form-label {
+    color: #e2e8f0 !important;
+}
+
+/* Color corporativo unificado para botones principales de Walena */
+.btn-walena-naranja {
+    background-color: #d97706 !important;
+    border-color: #d97706 !important;
+    color: #ffffff !important;
+}
+
+.btn-walena-naranja:hover {
+    background-color: #b45309 !important; /* Un tono ligeramente más oscuro para el efecto al pasar el ratón */
+    border-color: #b45309 !important;
+    color: #ffffff !important;
+}
+
+
+
+
+
+/* ================= VISTA PLANES TURISTICOS ================= */
+[data-bs-theme="light"] .titulo-card {
+    color: #00334e !important;
+}
+[data-bs-theme="dark"] .titulo-card {
+    color: #f8fafc !important;
+}
+
+/* Efecto hover suave en las tarjetas de tours */
+.folleto-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.folleto-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+}
+
+
+/* ================= VISTA EL HOTEL ================= */
+/* ================= TÍTULO "TU EXPERIENCIA EN WALENA HOTEL" ================= */
+[data-bs-theme="light"] .titulo-atardecer {
+    color: #00334e !important; /* Azul oscuro corporativo */
+}
+[data-bs-theme="light"] .titulo-atardecer span {
+    color: #d97706 !important; /* Naranja original */
+}
+
+[data-bs-theme="dark"] .titulo-atardecer {
+    color: #f8fafc !important; /* Blanco brillante para que se lea perfectamente */
+}
+[data-bs-theme="dark"] .titulo-atardecer span {
+    color: #e9ad17 !important; /* Un naranja/ámbar mucho más claro y luminoso */
+}
+
+/* Tarjetas de Servicios */
+.servicio-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.servicio-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Ajustes de cursor y transición para las fotos de la galería */
+.galeria-img {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.galeria-img:hover {
+    transform: scale(1.02);
+}
+
+
+
+/* ================= VISTA CATÁLOGO DE HABITACIONES ================= */
+[data-bs-theme="light"] .titulo-seccion {
+    color: #00334e !important;
+}
+[data-bs-theme="dark"] .titulo-seccion {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="light"] .text-primary-walena {
+    color: #00334e !important;
+}
+[data-bs-theme="dark"] .text-primary-walena {
+    color: #ffffff !important; /* Blanco puro para el nombre de la habitación en modo oscuro */
+}
+
+/* Insignia de precio ($ / noche) */
+[data-bs-theme="light"] .badge-precio {
+    background-color: #fff8e7 !important;
+    color: #d97706 !important;
+    border: 1px solid #f2c14e !important;
+}
+[data-bs-theme="dark"] .badge-precio {
+    background-color: rgba(217, 119, 6, 0.15) !important;
+    color: #fbbf24 !important;
+    border: 1px solid rgba(251, 191, 36, 0.3) !important;
+}
+
+/* Línea decorativa del encabezado */
+.linea-decorativa {
+    height: 3px;
+    width: 70px;
+    background-color: #d97706;
+    border-radius: 2px;
+}
+
+/* Animación hover para las tarjetas de habitaciones */
+.card-habitacion {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-habitacion:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Estilos para el bloque de servicios de las habitaciones */
+[data-bs-theme="light"] .card-habitacion .iconos-servicios {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+
+[data-bs-theme="dark"] .card-habitacion .iconos-servicios {
+    background-color: #1e293b !important; /* Azul pizarra un poco más claro en modo oscuro */
+    border: 1px solid #334155 !important;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+
+/* Iconos de servicios en color blanco dentro del bloque en modo oscuro */
+[data-bs-theme="dark"] .card-habitacion .iconos-servicios i {
+    color: #ffffff !important;
+}
+
+
+
+/* ================= VISTA INICIO (HOME) ================= */
+[data-bs-theme="light"] .titulo-seccion {
+    color: #00334e !important;
+}
+[data-bs-theme="dark"] .titulo-seccion {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="light"] .hotel-nombre-resaltado {
+    color: #00334e !important;
+}
+[data-bs-theme="dark"] .hotel-nombre-resaltado {
+    color: #d8d8d8 !important; /* Azul claro brillante para destacar en modo oscuro */
+}
+
+/* Tarjetas de características (icono con texto) */
+[data-bs-theme="light"] .item-caracteristica {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+}
+[data-bs-theme="dark"] .item-caracteristica {
+    background-color: #1e293b !important; /* Azul pizarra oscuro */
+    border-color: #334155 !important;
+}
+
+[data-bs-theme="light"] .texto-item-caracteristica {
+    color: #333333 !important;
+}
+[data-bs-theme="dark"] .texto-item-caracteristica {
+    color: #f8fafc !important; /* Texto blanco en las tarjetas pequeñas */
+}
+
+/* Insignia del lema inferior */
+[data-bs-theme="light"] .badge-lema {
+    background-color: #e9ecef !important;
+    color: #212529 !important;
+}
+[data-bs-theme="dark"] .badge-lema {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+    border: 1px solid #334155 !important;
+}
+
+
+
+/* ================= BOTÓN DE TEMA (MODO CLARO / SUAVE) ================= */
+#theme-toggle, 
+.btn-theme-toggle {
+    width: 42px !important;
+    height: 42px !important;
+    padding: 0 !important;
+    border-radius: 50% !important; /* Círculo perfecto */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* Estilo en Tema Claro */
+[data-bs-theme="light"] #theme-toggle,
+[data-bs-theme="light"] .btn-theme-toggle {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #d97706 !important; /* Icono en tono ámbar/dorado */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-bs-theme="light"] #theme-toggle:hover,
+[data-bs-theme="light"] .btn-theme-toggle:hover {
+    background-color: #fff8e7 !important;
+    border-color: #f2c14e !important;
+    transform: scale(1.05);
+}
+
+/* Estilo en Tema Oscuro */
+[data-bs-theme="dark"] #theme-toggle,
+[data-bs-theme="dark"] .btn-theme-toggle {
+    background-color: #3b4555 !important;
+    border: 1px solid #334155 !important;
+    color: #fbbf24 !important; /* Luna/Sol en amarillo brillante */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-bs-theme="dark"] #theme-toggle:hover,
+[data-bs-theme="dark"] .btn-theme-toggle:hover {
+    background-color: #1d2025 !important;
+    border-color: #475569 !important;
+    transform: scale(1.05);
+}
+
+
+
+
+/* ================= VISTA RESERVAR HABITACIÓN (MODO OSCURO) ================= */
+
+/* Contenedores y inputs adaptativos en modo oscuro */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+    background-color: #1e293b !important;
+    border-color: #38bdf8 !important;
+    color: #f8fafc !important;
+    box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.25) !important;
+}
+
+/* Forzar que el texto dentro del calendario de Flatpickr no desentone en modo oscuro */
+[data-bs-theme="dark"] .flatpickr-calendar {
+    background: #1e293b !important;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid #334155 !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-days,
+[data-bs-theme="dark"] .flatpickr-month {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-day {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-day.today {
+    border-color: #fbbf24 !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-day.selected, 
+[data-bs-theme="dark"] .flatpickr-day.selected:hover {
+    background: #d97706 !important;
+    border-color: #d97706 !important;
+    color: #fff !important;
+}
+
+/* ================= CORRECCIÓN DE ICONOS EN FORMULARIOS (MODO OSCURO) ================= */
+
+/* 1. Color de los iconos flotantes dentro de los inputs de reserva */
+[data-bs-theme="dark"] .icon-input {
+    color: #38bdf8 !important; /* Azul claro brillante / celeste corporativo */
+}
+
+/* 2. Color de las flechas y textos desplegables de los selectores (Adultos y Niños) */
+[data-bs-theme="dark"] .form-select {
+    color: #f8fafc !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2338bdf8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+}
+
+/* 3. Asegurar que las opciones dentro de los selectores también se lean bien */
+[data-bs-theme="dark"] .form-select option {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+
+
+/* ================= VISTA COMPLETAR DATOS (MODO OSCURO) ================= */
+[data-bs-theme="dark"] .form-control {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+/* Estilo específico para inputs de solo lectura en modo oscuro */
+[data-bs-theme="dark"] .form-control:read-only {
+    background-color: #0f172a !important;
+    color: #94a3b8 !important;
+    border-color: #334155 !important;
+}
+
+
+
+/* ================= VISTA RESERVA EXITOSA (MODO OSCURO) ================= */
+
+/* Ajuste de tarjetas de resumen interno */
+[data-bs-theme="dark"] .bg-body-tertiary {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+/* Alerta de abono del 50% adaptada para mejor contraste */
+[data-bs-theme="dark"] .alert-warning {
+    background-color: rgba(217, 119, 6, 0.15) !important;
+    border: 1px solid rgba(251, 191, 36, 0.3) !important;
+    color: #fbbf24 !important;
+}
+
+[data-bs-theme="dark"] .alert-warning strong {
+    color: #ffffff !important;
+}
+
+
+
+/* ================= MÓDULO DE RECEPCIÓN (MODO OSCURO) ================= */
+[data-bs-theme="dark"] .table {
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+}
+
+[data-bs-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .table-dark {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+}

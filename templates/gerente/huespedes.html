@@ -1,0 +1,136 @@
+{% extends 'base_gerente.html' %}
+{% block title %}Directorio de Huéspedes y Usuarios - Walena Hotel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom border-secondary">
+    <h1 class="h2 fw-bold text-walena-dark">Directorio de Huéspedes y Usuarios</h1>
+    <span class="badge badge-walena-gold fs-6 px-3 py-2 rounded-3 shadow-sm">
+        <i class="bi bi-people me-1"></i> Control de Usuarios y Roles
+    </span>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-walena-dark border-walena">
+    <div class="card-header bg-walena-darker border-bottom border-secondary p-4">
+        <form method="GET" class="input-group">
+            <input type="text" name="q" value="{{ query }}" class="form-control form-control-walena py-2" placeholder="Buscar por usuario o correo...">
+            <button class="btn btn-walena-gold px-4 fw-bold" type="submit">
+                <i class="bi bi-search me-1"></i> Buscar
+            </button>
+            {% if query %}
+            <a href="{% url 'gerente_huespedes' %}" class="btn btn-outline-light px-3 py-2" title="Limpiar búsqueda">
+                Limpiar
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 text-white border-walena bg-walena-dark">
+                <thead class="bg-walena-darker fs-7 text-uppercase">
+                    <tr class="align-middle">
+                        <th class="py-3 px-4 bg-transparent text-walena-gold text-nowrap" style="width: 80px;">ID</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap">Usuario</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap">Correo Electrónico</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap text-center">Nivel / Rol</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap">Estado</th>
+                        <th class="text-end px-4 bg-transparent text-walena-gold text-nowrap">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="border-top-0 bg-walena-dark">
+                    {% for u in usuarios %}
+                    <tr class="bg-walena-dark border-bottom border-walena">
+                        <td class="py-3 px-4 bg-transparent fw-bold text-walena-gold">#{{ u.id }}</td>
+                        <td class="text-white fw-medium bg-transparent">{{ u.username }}</td>
+                        <td class="text-white fw-medium bg-transparent">{{ u.email|default:"Sin correo" }}</td>
+                        
+                        <!-- Columna de Nivel con los 3 estados (0, 1, 2) -->
+                        <td class="text-center bg-transparent">
+                            {% if u.is_superuser %}
+                                <span class="badge bg-danger text-white fw-bold px-2 py-1">2 - Administrador</span>
+                            {% elif u.is_staff %}
+                                <span class="badge bg-warning text-dark fw-bold px-2 py-1">1 - Recepcionista</span>
+                            {% else %}
+                                <span class="badge bg-secondary text-white fw-bold px-2 py-1">0 - Huésped</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="bg-transparent">
+                            {% if u.is_active %}
+                                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-2 py-1">Activo</span>
+                            {% else %}
+                                <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 px-2 py-1">Inactivo</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end px-4 bg-transparent">
+                            <!-- Botón para rotar el rol usando la función cambiar_estado_staff -->
+                            <a href="{% url 'cambiar_estado_staff' u.id %}" class="btn btn-sm btn-outline-warning fw-semibold px-3 py-1 shadow-sm" title="Cambiar rol jerárquico (Huésped -> Recepción -> Admin)">
+                                <i class="bi bi-arrow-repeat me-1"></i> Cambiar Rol
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-white-50 py-5 bg-transparent">
+                            <i class="bi bi-search fs-2 d-block mb-2 text-walena-gold"></i>
+                            No se encontraron usuarios registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if usuarios.has_other_pages %}
+    <div class="card-footer bg-walena-darker border-top border-secondary py-3 px-4 d-flex justify-content-between align-items-center">
+        <span class="text-white-50 small">
+            Mostrando página {{ usuarios.number }} de {{ usuarios.paginator.num_pages }}
+        </span>
+        <nav aria-label="Navegación de usuarios">
+            <ul class="pagination pagination-walena mb-0">
+                {% if usuarios.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ usuarios.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Anterior</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link bg-transparent text-secondary border-secondary">Anterior</span>
+                    </li>
+                {% endif %}
+
+                {% for num in usuarios.paginator.page_range %}
+                    {% if usuarios.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > usuarios.number|add:'-3' and num < usuarios.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if usuarios.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ usuarios.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Siguiente</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link bg-transparent text-secondary border-secondary">Siguiente</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completar Datos - Walena Hotel</title>
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-body text-body">
+
+    {% include 'inc/nav.html' %}
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow border-0 rounded-4 p-4 p-md-5 bg-body">
+                    <div class="text-center mb-4">
+                        <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">Paso Final de Reserva</span>
+                        <h2 class="fw-bold titulo-seccion">Información del Huésped</h2>
+                        <p class="text-secondary small">Completa tus datos personales para formalizar la estancia en la habitación seleccionada.</p>
+                    </div>
+
+                    {% if habitacion.imagen %}
+                        <div class="mb-4 text-center">
+                            <img src="{{ habitacion.imagen.url }}" class="img-fluid rounded-4 shadow-sm" alt="Habitación {{ habitacion.numero }}" style="max-height: 280px; width: 100%; object-fit: cover;">
+                            <span class="d-block mt-2 fw-bold text-secondary">Habitación #{{ habitacion.numero }} — Tipo: {{ habitacion.tipo }}</span>
+                        </div>
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary">Nombres</label>
+                                <input type="text" name="nombre" class="form-control rounded-pill px-3" required placeholder="Tus nombres">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary">Apellidos</label>
+                                <input type="text" name="apellido" class="form-control rounded-pill px-3" required placeholder="Tus apellidos">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary">Número de Cédula</label>
+                                <input type="text" name="cedula" class="form-control rounded-pill px-3" required placeholder="Ej: 12345678">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary">Teléfono de Contacto</label>
+                                <input type="text" name="telefono" class="form-control rounded-pill px-3" required placeholder="Ej: 3128335638">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-secondary">Correo Electrónico</label>
+                                <input type="email" name="correo" class="form-control rounded-pill px-3" value="{{ request.user.email }}" readonly>
+                            </div>
+
+                            <input type="hidden" name="checkin" value="{{ request.GET.checkin }}">
+                            <input type="hidden" name="checkout" value="{{ request.GET.checkout }}">
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn fw-bold py-3 rounded-pill shadow-sm" style="background-color: #f2c14e; color: #00334e;">
+                                <i class="bi bi-check-circle-fill me-2"></i> Confirmar y Registrar Reserva
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS y Script de tema -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/theme.js' %}"></script>
+</body>
+</html>

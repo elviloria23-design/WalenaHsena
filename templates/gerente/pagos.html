@@ -1,0 +1,58 @@
+{% extends 'base_gerente.html' %}
+{% block title %}Registro de Pagos y Abonos - Walena Hotel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom border-secondary">
+    <h1 class="h2 fw-bold text-walena-dark">Registro de Pagos y Abonos</h1>
+    <span class="badge badge-walena-gold fs-6 px-3 py-2 rounded-3 shadow-sm">
+        <i class="bi bi-wallet2 me-1"></i> Ingresos Walena
+    </span>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-walena-dark border-walena">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 text-white border-walena bg-walena-dark">
+                <thead class="bg-walena-darker fs-7 text-uppercase">
+                    <tr class="align-middle">
+                        <th class="py-3 px-4 bg-transparent text-walena-gold text-nowrap" style="width: 100px;"># Pago</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap">Reserva Asociada</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap">Monto</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap">Método de Pago</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap">Tipo de Pago</th>
+                        <th class="text-end px-4 bg-transparent text-walena-gold text-nowrap">Fecha</th>
+                    </tr>
+                </thead>
+                <tbody class="border-top-0 bg-walena-dark">
+                    {% for pago in pagos %}
+                    <tr class="bg-walena-dark border-bottom border-walena">
+                        <td class="py-3 px-4 bg-transparent fw-bold text-walena-gold">#{{ pago.id }}</td>
+                        <td class="text-white bg-transparent">Reserva #{{ pago.reserva.id }}</td>
+                        <td class="text-success fw-bold bg-transparent">${{ pago.monto }} COP</td>
+                        <td class="text-white-50 bg-transparent">{{ pago.metodo_pago }}</td>
+                        <td class="text-white bg-transparent">{{ pago.tipo_pago }}</td>
+                        <td class="text-end px-4 text-white-50 bg-transparent">{{ pago.fecha|date:"M. d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-white-50 py-5 bg-transparent">
+                            <i class="bi bi-cash-stack fs-2 d-block mb-2 text-walena-gold"></i>
+                            No hay pagos o abonos registrados en el sistema.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

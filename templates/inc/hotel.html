@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Hotel - Walena Hotel</title>
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-body text-body">
+
+    {% include 'inc/nav.html' %}
+
+    <section class="py-5 text-center bg-body shadow-sm border-bottom">
+        <div class="container my-3">
+            <h1 class="display-4 titulo-atardecer mb-3">
+                Tu Experiencia en <span>Walena Hotel</span>
+            </h1>
+            <div class="d-flex align-items-center justify-content-center gap-2 text-warning mx-auto mb-4" style="max-width: 220px;">
+                <hr class="flex-grow-1 border-secondary my-0 opacity-50">
+                <i class="bi bi-tree-fill text-warning"></i>
+                <hr class="flex-grow-1 border-secondary my-0 opacity-50">
+            </div>
+            <p class="lead mx-auto text-secondary fs-5" style="max-width: 800px;">
+                <strong>
+                    En Walena Hotel nos dedicamos a ofrecerte más que un hospedaje: te brindamos un refugio cálido y acogedor. Nuestro compromiso es garantizar tu tranquilidad,
+                    descanso inolvidable y una atención personalizada que te hará sentir como en casa desde el primer momento.
+                </strong>
+            </p>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-4 titulo-principal">Comodidades y Servicios</h2>
+            
+            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3 text-center">
+                <div class="col">
+                    <div class="p-3 bg-body rounded-3 shadow-sm h-100 border servicio-card">
+                        <i class="bi bi-compass fs-1 mb-2 text-warning"></i>
+                        <h6 class="fw-bold mb-0 titulo-servicio">Planes Turísticos</h6>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="p-3 bg-body rounded-3 shadow-sm h-100 border servicio-card">
+                        <i class="bi bi-wifi fs-1 mb-2 text-warning"></i>
+                        <h6 class="fw-bold mb-0 titulo-servicio">Wi-Fi Gratis</h6>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="p-3 bg-body rounded-3 shadow-sm h-100 border servicio-card">
+                        <i class="bi bi-egg-fried fs-1 mb-2 text-warning"></i>
+                        <h6 class="fw-bold mb-0 titulo-servicio">Desayuno Gratis</h6>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="p-3 bg-body rounded-3 shadow-sm h-100 border servicio-card">
+                        <i class="bi bi-tv fs-1 mb-2 text-warning"></i>
+                        <h6 class="fw-bold mb-0 titulo-servicio">TV Internacional</h6>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="p-3 bg-body rounded-3 shadow-sm h-100 border servicio-card">
+                        <i class="bi bi-house-door fs-1 mb-2 text-warning"></i>
+                        <h6 class="fw-bold mb-0 titulo-servicio">Salón de Estar y Patio</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-body border-top">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-4 titulo-principal">Nuestras Instalaciones</h2>
+            
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+                <div class="col">
+                    <img src="{% static 'img/zonatrabajo.png' %}" class="img-fluid rounded-3 shadow-sm galeria-img" onclick="abrirVisor(0)" alt="Instalaciones 0">
+                </div>
+                <div class="col">
+                    <img src="{% static 'img/patio.png' %}" class="img-fluid rounded-3 shadow-sm galeria-img" onclick="abrirVisor(1)" alt="Instalaciones 1">
+                </div>
+                <div class="col">
+                    <img src="{% static 'img/pasillo.png' %}" class="img-fluid rounded-3 shadow-sm galeria-img" onclick="abrirVisor(2)" alt="Instalaciones 2">
+                </div>
+                <div class="col">
+                    <img src="{% static 'img/balcon.png' %}" class="img-fluid rounded-3 shadow-sm galeria-img" onclick="abrirVisor(3)" alt="Instalaciones 3">
+                </div>
+                <div class="col">
+                    <img src="{% static 'img/hotel.png' %}" class="img-fluid rounded-3 shadow-sm galeria-img" onclick="abrirVisor(4)" alt="Instalaciones 4">
+                </div>
+                <div class="col">
+                    <img src="{% static 'img/patioarriba.png' %}" class="img-fluid rounded-3 shadow-sm galeria-img" onclick="abrirVisor(5)" alt="Instalaciones 5">
+                </div>
+                <div class="col">
+                    <img src="{% static 'img/recepcion.png' %}" class="img-fluid rounded-3 shadow-sm galeria-img" onclick="abrirVisor(6)" alt="Instalaciones 6">
+                </div>
+                <div class="col">
+                    <img src="{% static 'img/hoteldia.png' %}" class="img-fluid rounded-3 shadow-sm galeria-img" onclick="abrirVisor(7)" alt="Instalaciones 7">
+                </div>
+                <div class="col">
+                    <img src="{% static 'img/zonatrabajo2.png' %}" class="img-fluid rounded-3 shadow-sm galeria-img" onclick="abrirVisor(8)" alt="Instalaciones 8">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="visorFotos" class="visor-modal">
+        <div class="visor-overlay" onclick="cerrarVisor()"></div>
+        
+        <button class="btn-cerrar" onclick="cerrarVisor()"><i class="bi bi-x-circle-fill"></i></button>
+
+        <button class="btn-nav btn-prev" onclick="cambiarFoto(-1)"><i class="bi bi-chevron-left"></i></button>
+        <button class="btn-nav btn-next" onclick="cambiarFoto(1)"><i class="bi bi-chevron-right"></i></button>
+
+        <div class="visor-contenido">
+            <img id="fotoAmpliada" src="" alt="Foto ampliada">
+        </div>
+    </div>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/theme.js' %}"></script>
+
+    <script>
+        const imagenes = [
+            "{% static 'img/zonatrabajo.png' %}",
+            "{% static 'img/patio.png' %}",
+            "{% static 'img/pasillo.png' %}",
+            "{% static 'img/balcon.png' %}",
+            "{% static 'img/hotel.png' %}",
+            "{% static 'img/patioarriba.png' %}",
+            "{% static 'img/recepcion.png' %}",
+            "{% static 'img/hoteldia.png' %}",
+            "{% static 'img/zonatrabajo2.png' %}",
+        ];
+        
+        let indiceActual = 0;
+
+        function abrirVisor(index) {
+            indiceActual = index;
+            document.getElementById('fotoAmpliada').src = imagenes[indiceActual];
+            document.getElementById('visorFotos').classList.add('activo');
+        }
+
+        function cerrarVisor() {
+            document.getElementById('visorFotos').classList.remove('activo');
+        }
+
+        function cambiarFoto(direccion) {
+            indiceActual += direccion;
+            if (indiceActual < 0) indiceActual = imagenes.length - 1;
+            if (indiceActual >= imagenes.length) indiceActual = 0;
+            document.getElementById('fotoAmpliada').src = imagenes[indiceActual];
+        }
+    </script>
+</body>
+</html>

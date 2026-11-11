@@ -1,0 +1,1110 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import usuario, reservas, pagos, Habitacion, Servicio, HotelConfig, TipoHabitacion, huespedes
+from .forms import ReservaForm
+from django.db.models import Q, Count, Sum
+from datetime import datetime
+import random
+from django.utils import timezone
+from django.core.mail import EmailMultiAlternatives, send_mail
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.template.loader import render_to_string
+
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+
+configuration = sib_api_v3_sdk.Configuration()
+configuration.api_key['api-key'] = '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'
+
+
+# ==========================================
+# CONTROL DE ROLES JERÁRQUICOS (0, 1, 2)
+# ==========================================
+
+def es_gerente(user):
+
+    if not user.is_authenticated:
+        return False
+    return user.is_superuser
+
+
+def es_recepcionista_o_superior(user):
+
+    if not user.is_authenticated:
+        return False
+    return user.is_staff or user.is_superuser
+
+
+# ==========================================
+# VISTAS PÚBLICAS (Huésped / Cliente)
+# ==========================================
+
+def home(request):
+    return render(request, 'inc/home.html')
+
+
+def catalogo_habitaciones(request):
+    habitaciones = Habitacion.objects.all()
+    return render(request, 'catalogo_habitaciones.html', {'habitaciones': habitaciones})
+
+
+# ==========================================
+# VISTAS PRIVADAS / AUTENTICACIÓN
+# ==========================================
+
+def crear_cuenta(request):
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        password_confirm = request.POST.get('password_confirm')
+
+        context = {'username': username, 'email': email}
+
+        if password != password_confirm:
+            messages.error(request, 'Las contraseñas no coinciden.')
+            return render(request, 'registrarse.html', context)
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'El nombre de usuario ya está registrado.')
+            return render(request, 'registrarse.html', context)
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'El correo electrónico ya está registrado.')
+            return render(request, 'registrarse.html', context)
+
+        codigo_verificacion = str(random.randint(100000, 999999))
+
+        request.session['temp_user'] = {
+            'username': username,
+            'email': email,
+            'password': password,
+            'codigo': codigo_verificacion
+        }
+
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        sender = {"name": "Walena Hotel", "email": "elviloria23@gmail.com"}
+        to = [{"email": email, "name": username}]
+        
+        html_content = f"""
+            <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                <h2 style="color: #00334e;">Código de Verificación - Walena Hotel</h2>
+                <hr style="border: 1px solid #f2c14e;">
+                <p>Hola <strong>{username}</strong>,</p>
+                <p>Tu código de verificación para completar el registro es:</p>
+                <h1 style="color: #d97706; letter-spacing: 2px;">{codigo_verificacion}</h1>
+                <p>Si no solicitaste esta cuenta, puedes ignorar este mensaje.</p>
+            </div>
+        """
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            sender=sender,
+            subject="Código de verificación para tu cuenta - Walena Hotel",
+            html_content=html_content
+        )
+
+        try:
+            api_instance.send_transac_email(send_smtp_email)
+            messages.success(request, '¡Te hemos enviado un código de verificación a tu correo!')
+            return redirect('verificar_codigo')
+        except ApiException:
+            messages.error(request, 'Error al enviar el correo de verificación. Inténtalo de nuevo.')
+
+    return render(request, 'registrarse.html')
+
+
+def verificar_codigo(request):
+    if 'temp_user' not in request.session:
+        return redirect('crear_cuenta')
+
+    if request.method == 'POST':
+        codigo_ingresado = request.POST.get('codigo')
+        datos_temp = request.session['temp_user']
+
+        if codigo_ingresado == datos_temp['codigo']:
+            user = User.objects.create_user(
+                username=datos_temp['username'],
+                email=datos_temp['email'],
+                password=datos_temp['password']
+            )
+            user.save()
+
+            del request.session['temp_user']
+
+            messages.success(request, '¡Cuenta verificada y creada con éxito! Ya puedes iniciar sesión.')
+            return redirect('login')
+        else:
+            messages.error(request, 'El código de verificación es incorrecto.')
+
+    return render(request, 'verificar_codigo.html')
+
+
+def login_view(request):
+    username_ingresado = ''
+    
+    if request.method == 'POST':
+        username_ingresado = request.POST.get('username', '').strip()
+        password_ingresado = request.POST.get('password', '').strip()
+        
+        user = authenticate(request, username=username_ingresado, password=password_ingresado)
+        
+        if user is not None:
+            login(request, user)
+            messages.success(request, f'¡Bienvenido de nuevo, {user.username}!')
+            return redirect('home')
+        else:
+            messages.error(request, 'Usuario o contraseña incorrectos. Por favor, verifica tus datos.')
+            
+    context = {
+        'username_ingresado': username_ingresado,
+    }
+    return render(request, 'login.html', context)
+
+
+def cerrar_sesion(request):
+    logout(request)
+    return redirect('login')
+
+
+# ==========================================
+# VISTAS DEL HOTEL Y CONTACTO
+# ==========================================
+
+def hotel_view(request):
+    return render(request, 'inc/hotel.html')
+
+
+def planes_view(request):
+    return render(request, 'planes.html')
+
+
+def desayunos_view(request):
+    return render(request, 'desayunos.html')
+
+
+def contactanos_view(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        email_remitente = request.POST.get('email')
+        telefono = request.POST.get('telefono')
+        asunto_seleccionado = request.POST.get('asunto')
+        mensaje_cliente = request.POST.get('mensaje')
+
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+
+        sender = {"name": "Walena Hotel Contacto", "email": "elviloria23@gmail.com"}
+        to = [{"email": "elviloria23@gmail.com", "name": "Administración Walena Hotel"}]
+
+        contexto = {
+            'nombre': nombre,
+            'email_remitente': email_remitente,
+            'telefono': telefono,
+            'asunto_seleccionado': asunto_seleccionado,
+            'mensaje_cliente': mensaje_cliente,
+        }
+
+        html_content = render_to_string('correo_contacto.html', contexto)
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            sender=sender,
+            subject=f"[{asunto_seleccionado}] - Mensaje de {nombre}",
+            html_content=html_content,
+            reply_to={"email": email_remitente, "name": nombre}
+        )
+
+        try:
+            api_instance.send_transac_email(send_smtp_email)
+            messages.success(request, '¡Tu mensaje ha sido enviado con éxito! Te responderemos pronto.')
+            return redirect('contactanos')
+        except ApiException:
+            messages.error(request, 'Ocurrió un error al enviar el mensaje. Inténtalo de nuevo.')
+
+    return render(request, 'contactanos.html')
+
+
+# ==========================================
+# PROCESO DE RESERVA (HUÉSPED)
+# ==========================================
+
+@login_required
+def reservar_habitacion(request, habitacion_id):
+    habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+
+    if request.method == 'POST':
+        reserva_activa = reservas.objects.filter(
+            usuario=request.user, 
+            estado__in=['Pendiente', 'Confirmada']
+        ).exists()
+
+        if reserva_activa:
+            messages.error(
+                request, 
+                "Ya cuentas con una reserva activa o pendiente. Debes cancelarla antes de solicitar una nueva."
+            )
+            return redirect('mis_reservas')
+
+        checkin = request.POST.get('checkin')
+        checkout = request.POST.get('checkout')
+        
+        adultos = int(request.POST.get('adultos', 1))
+        ninos = int(request.POST.get('ninos', 0))
+
+        try:
+            fecha_in = datetime.strptime(checkin, '%Y-%m-%d')
+            fecha_out = datetime.strptime(checkout, '%Y-%m-%d')
+            noches = (fecha_out - fecha_in).days
+            if noches < 1:
+                noches = 1
+        except (ValueError, TypeError):
+            noches = 1
+
+        tarifas_adultos = {
+            1: 160650,
+            2: 220150,
+            3: 279650,
+            4: 339150
+        }
+
+        precio_noche = tarifas_adultos.get(adultos, float(habitacion.precio_noche or 160650))
+        precio_total = precio_noche * noches
+
+        request.session['temp_reserva'] = {
+            'checkin': checkin,
+            'checkout': checkout,
+            'adultos': adultos,
+            'ninos': ninos,
+            'precio_total': precio_total
+        }
+        
+        request.session.modified = True
+
+        return redirect('completar_datos_huesped', habitacion_id=habitacion.id)
+
+    return render(request, 'reservar.html', {'habitacion': habitacion})
+
+
+@login_required(login_url='/login/')
+def completar_datos_huesped(request, habitacion_id):
+    habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+    datos_temp = request.session.get('temp_reserva')
+
+    if not datos_temp:
+        return redirect('reservar_habitacion', habitacion_id=habitacion.id)
+
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+        cedula = request.POST.get('cedula')
+        correo = request.POST.get('correo') or request.user.email
+        telefono = request.POST.get('telefono')
+
+        huespedes.objects.update_or_create(
+            cedula=cedula,
+            defaults={
+                'nombre': nombre,
+                'apellido': apellido,
+                'correo': correo,
+                'telefono': telefono,
+            }
+        )
+
+        adultos_val = int(datos_temp.get('adultos', 1))
+        ninos_val = int(datos_temp.get('ninos', 0))
+        precio_final = datos_temp.get('precio_total')
+
+        nueva_reserva = reservas.objects.create(
+            usuario=request.user,
+            habitacion=habitacion,
+            checkin=datos_temp['checkin'],
+            checkout=datos_temp['checkout'],
+            adultos=adultos_val,
+            ninos=ninos_val,
+            precio_total=precio_final,
+            correo=correo,
+            nombre=nombre,
+            apellido=apellido,
+            cedula=cedula,
+            telefono=telefono,
+            estado='Pendiente'
+        )
+
+        if 'temp_reserva' in request.session:
+            del request.session['temp_reserva']
+
+        messages.success(
+            request, 
+            "¡Reserva registrada con éxito! Para confirmar su cupo, por favor póngase en contacto con nosotros para realizar el abono del 50%."
+        )
+
+        return redirect('reserva_exitosa', reserva_id=nueva_reserva.id)
+
+    context = {
+        'habitacion': habitacion,
+        'datos_reserva': datos_temp
+    }
+    return render(request, 'completar_datos.html', context)
+
+
+@login_required(login_url='/login/')
+def reserva_exitosa(request, reserva_id):
+    reserva = get_object_or_404(reservas, id=reserva_id, usuario=request.user)
+    huesped = huespedes.objects.filter(correo=request.user.email).first()
+
+    context = {
+        'reserva': reserva,
+        'huesped': huesped
+    }
+    return render(request, 'reserva_exitosa.html', context)
+
+
+def enviar_correo_reserva(request, reserva_id):
+    reserva = get_object_or_404(reservas, id=reserva_id)
+
+    if not reserva.correo:
+        messages.error(request, "Esta reserva no tiene un correo electrónico asociado.")
+        return redirect('reserva_exitosa', reserva_id=reserva.id)
+
+    asunto = "Comprobante y Resumen de Reserva - Walena Hotel"
+    remitente = settings.DEFAULT_FROM_EMAIL
+    destinatario = [reserva.correo]
+
+    texto_plano = f"Hola {reserva.nombre} {reserva.apellido}, tu reserva en Walena Hotel ha sido registrada con éxito."
+
+    html_contenido = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                background-color: #f4f6f9;
+                margin: 0;
+                padding: 20px;
+            }}
+            .email-container {{
+                max-width: 600px;
+                background: #ffffff;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                margin: auto;
+            }}
+            h2 {{
+                color: #00334e;
+                text-align: center;
+                border-bottom: 2px solid #f2c14e;
+                padding-bottom: 10px;
+            }}
+            .details-box {{
+                background: #f9f9f9;
+                padding: 15px 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+            }}
+            .details-box ul {{
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }}
+            .details-box li {{
+                padding: 8px 0;
+                border-bottom: 1px solid #eee;
+                font-size: 14px;
+                color: #333;
+            }}
+            .details-box li strong {{
+                color: #00334e;
+            }}
+            .total {{
+                font-size: 18px;
+                color: #00334e;
+                font-weight: bold;
+                text-align: right;
+                margin-top: 15px;
+            }}
+            .footer {{
+                text-align: center;
+                font-size: 12px;
+                color: #888;
+                margin-top: 30px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="email-container">
+            <h2>🏨 Walena Hotel</h2>
+            <p>¡Hola <strong>{reserva.nombre} {reserva.apellido}</strong>!</p>
+            <p>Hemos registrado exitosamente tu solicitud de reserva. Aquí tienes los detalles:</p>
+            
+            <div class="details-box">
+                <ul>
+                    <li><strong>Habitación:</strong> #{reserva.habitacion.numero} ({reserva.habitacion.tipo})</li>
+                    <li><strong>Cédula:</strong> {reserva.cedula}</li>
+                    <li><strong>Teléfono:</strong> {reserva.telefono}</li>
+                    <li><strong>Check-in:</strong> {reserva.checkin}</li>
+                    <li><strong>Check-out:</strong> {reserva.checkout}</li>
+                    <li><strong>Adultos:</strong> {reserva.adultos} | <strong>Niños:</strong> {reserva.ninos}</li>
+                    <li><strong>Estado:</strong> {reserva.estado}</li>
+                </ul>
+                <div class="total">
+                    Total a Pagar: ${reserva.precio_total}
+                </div>
+            </div>
+
+            <p style="text-align: center; color: #555;">
+                Para confirmar su cupo, por favor póngase en contacto con nosotros para realizar el abono del 50%.
+            </p>
+
+            <div class="footer">
+                <p>© 2026 Walena Hotel. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    try:
+        msg = EmailMultiAlternatives(asunto, texto_plano, remitente, destinatario)
+        msg.attach_alternative(html_contenido, "text/html")
+        msg.send()
+        messages.success(request, "¡Correo con diseño enviado con éxito!")
+    except Exception as e:
+        messages.error(request, f"No se pudo enviar el correo: {e}")
+
+    return redirect('reserva_exitosa', reserva_id=reserva.id)
+
+
+@login_required
+def cancelar_reserva(request, reserva_id):
+    if request.method == 'POST':
+        reserva = get_object_or_404(reservas, id=reserva_id, usuario=request.user)
+        
+        if reserva.estado == 'Pendiente':
+            reserva.estado = 'Cancelada'
+            reserva.save()
+            messages.success(request, "Tu reserva ha sido cancelada exitosamente.")
+        else:
+            messages.error(request, "Esta reserva no se puede cancelar porque ya fue procesada.")
+            
+    return redirect('mis_reservas')
+
+
+@login_required
+def mis_reservas(request):
+    filtro = request.GET.get('filtro', 'activas')
+    page = request.GET.get('page', 1)
+    
+    if filtro == 'canceladas':
+        lista_reservas = reservas.objects.filter(
+            usuario=request.user, 
+            estado='Cancelada'
+        ).order_by('-fecha_creacion')
+    else:
+        lista_reservas = reservas.objects.filter(
+            usuario=request.user, 
+            estado__in=['Pendiente', 'Confirmada']
+        ).order_by('-fecha_creacion')
+
+    paginator = Paginator(lista_reservas, 3)
+
+    try:
+        reservas_paginadas = paginator.page(page)
+    except PageNotAnInteger:
+        reservas_paginadas = paginator.page(1)
+    except EmptyPage:
+        reservas_paginadas = paginator.page(paginator.num_pages)
+
+    return render(request, 'mis_reservas.html', {
+        'reservas': reservas_paginadas,
+        'filtro_actual': filtro
+    })
+
+
+# ==========================================
+# PANEL DE RECEPCIÓN (Rol 1 y Rol 2)
+# ==========================================
+
+@login_required(login_url='/login/')
+@user_passes_test(es_recepcionista_o_superior, login_url='/habitaciones/')
+def panel_recepcion(request):
+    busqueda = request.GET.get('q', '')
+    estado_filtro = request.GET.get('estado', 'Pendiente')
+
+    reservas_list = reservas.objects.all().order_by('-id')
+
+    if estado_filtro:
+        reservas_list = reservas_list.filter(estado__iexact=estado_filtro)
+
+    if busqueda:
+        reservas_list = reservas_list.filter(
+            Q(nombre__icontains=busqueda) |
+            Q(apellido__icontains=busqueda) |
+            Q(cedula__icontains=busqueda) |
+            Q(correo__icontains=busqueda)
+        )
+
+    paginator = Paginator(reservas_list, 10)
+    page_number = request.GET.get('page')
+    reservas_paginadas = paginator.get_page(page_number)
+
+    context = {
+        'reservas': reservas_paginadas,
+        'busqueda': busqueda,
+        'estado_filtro': estado_filtro,
+    }
+    return render(request, 'recepcion/recepcion_dashboard.html', context)
+
+@login_required(login_url='/login/')
+@user_passes_test(es_recepcionista_o_superior, login_url='/habitaciones/')
+def cambiar_estado_reserva_recepcion(request, reserva_id, nuevo_estado):
+    reserva = get_object_or_404(reservas, id=reserva_id)
+    
+    # Validamos estados permitidos para el recepcionista
+    estados_validos = ['Pendiente', 'Confirmada', 'Completada', 'Cancelada']
+    if nuevo_estado in estados_validos:
+        reserva.estado = nuevo_estado
+        reserva.save()
+        messages.success(request, f"La reserva de {reserva.nombre} ahora está en estado: {nuevo_estado}.")
+    else:
+        messages.error(request, "Estado no válido.")
+        
+    return redirect('panel_recepcion')
+
+# ==========================================
+# PANEL DE GERENCIA / ADMIN (Solo Rol 2)
+# ==========================================
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_dashboard(request):
+    hoy = timezone.now().date()
+
+    total_habitaciones = Habitacion.objects.count()
+    habitaciones_ocupadas = Habitacion.objects.filter(estado='Ocupada').count()
+    habitaciones_disponibles = Habitacion.objects.filter(estado='Disponible').count()
+    
+    porcentaje_ocupacion = (
+        int((habitaciones_ocupadas / total_habitaciones) * 100)
+        if total_habitaciones > 0
+        else 0
+    )
+
+    total_reservas = reservas.objects.count()
+    reservas_activas = reservas.objects.filter(estado__in=['Pendiente', 'Confirmada']).count()
+    reservas_del_dia = reservas.objects.filter(checkin=hoy).count()
+
+    ingresos_totales = pagos.objects.aggregate(total=Sum('monto'))['total'] or 0
+    total_usuarios = User.objects.count()
+
+    estado_filtro = request.GET.get('estado', '')
+    busqueda = request.GET.get('q', '')
+
+    reservas_list = reservas.objects.all().order_by('-id')
+
+    if estado_filtro:
+        reservas_list = reservas_list.filter(estado__iexact=estado_filtro)
+
+    if busqueda:
+        reservas_list = reservas_list.filter(usuario__username__icontains=busqueda)
+
+    paginator = Paginator(reservas_list, 5)
+    page_number = request.GET.get('page')
+    reservas_paginadas = paginator.get_page(page_number)
+
+    context = {
+        'total_habitaciones': total_habitaciones,
+        'habitaciones_ocupadas': habitaciones_ocupadas,
+        'habitaciones_disponibles': habitaciones_disponibles,
+        'porcentaje_ocupacion': porcentaje_ocupacion,
+        'total_reservas': total_reservas,
+        'reservas_activas': reservas_activas,
+        'reservas_del_dia': reservas_del_dia,
+        'ingresos_totales': ingresos_totales,
+        'total_usuarios': total_usuarios,
+        'reservas': reservas_paginadas,
+        'estado_filtro': estado_filtro,
+        'busqueda': busqueda,
+    }
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'gerente/partials/tabla_reservas_ajax.html', context)
+
+    return render(request, 'gerente/dashboard.html', context)
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_habitaciones(request):
+    if request.method == 'POST':
+        numero = request.POST.get('numero')
+        piso = request.POST.get('piso')
+        tipo = request.POST.get('tipo')
+        cap_max = request.POST.get('cap_max')
+        
+        precio_str = request.POST.get('precio_noche', '0')
+        precio_limpio = precio_str.replace('.', '').replace(',', '.')
+        try:
+            precio_noche = float(precio_limpio)
+        except ValueError:
+            precio_noche = 0.0
+
+        estado = request.POST.get('estado', 'Disponible')
+
+        foto1 = request.FILES.get('foto1')
+        foto2 = request.FILES.get('foto2')
+        foto3 = request.FILES.get('foto3')
+        foto4 = request.FILES.get('foto4')
+
+        try:
+            Habitacion.objects.create(
+                numero=numero,
+                piso=piso,
+                tipo=tipo,
+                cap_max=cap_max,
+                precio_noche=precio_noche,
+                estado=estado,
+                foto1=foto1,
+                foto2=foto2,
+                foto3=foto3,
+                foto4=foto4,
+            )
+            messages.success(request, '¡Habitación creada y publicada exitosamente!')
+        except Exception as e:
+            messages.error(request, f'Error al registrar la habitación: {e}')
+
+        return redirect('gerente_habitaciones')
+
+    lista_habitaciones = Habitacion.objects.all()
+    return render(request, 'gerente/habitaciones.html', {'habitaciones': lista_habitaciones})
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def editar_habitacion(request, habitacion_id):
+    habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+
+    if request.method == 'POST':
+        habitacion.numero = request.POST.get('numero') or habitacion.numero
+        habitacion.piso = request.POST.get('piso') or habitacion.piso
+        habitacion.tipo = request.POST.get('tipo') or habitacion.tipo
+
+        cap_max = request.POST.get('cap_max')
+        if cap_max:
+            habitacion.cap_max = cap_max
+            
+        precio_noche = request.POST.get('precio_noche')
+        if precio_noche:
+            habitacion.precio_noche = precio_noche
+
+        if request.POST.get('estado'):
+            habitacion.estado = request.POST.get('estado')
+
+        if 'foto1' in request.FILES:
+            habitacion.foto1 = request.FILES['foto1']
+        if 'foto2' in request.FILES:
+            habitacion.foto2 = request.FILES['foto2']
+        if 'foto3' in request.FILES:
+            habitacion.foto3 = request.FILES['foto3']
+        if 'foto4' in request.FILES:
+            habitacion.foto4 = request.FILES['foto4']
+
+        habitacion.save()
+        messages.success(request, f"¡Habitación N° {habitacion.numero} actualizada correctamente!")
+        return redirect('gerente_habitaciones')
+
+    return render(request, 'gerente/editar_habitacion.html', {'habitacion': habitacion})
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def eliminar_habitacion(request, habitacion_id):
+    if request.method == 'POST':
+        habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+
+        habitacion.estado = 'Inactiva'
+        habitacion.save()
+
+        messages.success(request, f"La habitación N° {habitacion.numero} ha sido dada de baja (estado Inactiva).")
+
+    return redirect('gerente_habitaciones')
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_reservas(request):
+    estado_filtro = request.GET.get('estado', '')
+    
+    if estado_filtro:
+        reservas_list = reservas.objects.filter(estado=estado_filtro).order_by('-id')
+    else:
+        reservas_list = reservas.objects.all().order_by('-id')
+
+    paginator = Paginator(reservas_list, 10)
+    page_number = request.GET.get('page')
+    reservas_paginadas = paginator.get_page(page_number)
+    
+    context = {
+        'reservas': reservas_paginadas,
+        'estado_filtro': estado_filtro,
+    }
+    return render(request, 'gerente/reservas.html', context)
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_pagos(request):
+    lista_pagos = pagos.objects.all()
+    return render(request, 'gerente/pagos.html', {'pagos': lista_pagos})
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_huespedes(request):
+    query = request.GET.get('q', '')
+
+    usuarios_list = User.objects.all().order_by('-id')
+
+    if query:
+        usuarios_list = usuarios_list.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(email__icontains=query)
+        )
+
+    paginator = Paginator(usuarios_list, 5)
+    page_number = request.GET.get('page')
+    usuarios_paginados = paginator.get_page(page_number)
+
+    context = {
+        'usuarios': usuarios_paginados,
+        'query': query,
+    }
+    return render(request, 'gerente/huespedes.html', context)
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def cambiar_estado_staff(request, user_id):
+    usuario_obj = get_object_or_404(User, id=user_id)
+
+    if not usuario_obj.is_staff and not usuario_obj.is_superuser:
+        usuario_obj.is_staff = True
+        usuario_obj.is_superuser = False
+        rol_texto = "Recepcionista (1)"
+    elif usuario_obj.is_staff and not usuario_obj.is_superuser:
+        usuario_obj.is_staff = True
+        usuario_obj.is_superuser = True
+        rol_texto = "Administrador (2)"
+    else:
+        usuario_obj.is_staff = False
+        usuario_obj.is_superuser = False
+        rol_texto = "Huésped (0)"
+
+    usuario_obj.save()
+    messages.success(request, f"Se actualizó el rol de {usuario_obj.username} a: {rol_texto}.")
+    return redirect('gerente_huespedes')
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_reportes(request):
+    fecha_inicio = request.GET.get('fecha_inicio', '')
+    fecha_fin = request.GET.get('fecha_fin', '')
+    estado = request.GET.get('estado', '')
+
+    reservas_list = reservas.objects.all().order_by('-id')
+
+    if fecha_inicio and fecha_fin:
+        reservas_list = reservas_list.filter(
+            fecha_creacion__range=[fecha_inicio, fecha_fin]
+        )
+
+    if estado:
+        reservas_list = reservas_list.filter(estado__iexact=estado)
+
+    reservas_activas = reservas_list.exclude(estado__iexact='Cancelada')
+    total_recaudado = pagos.objects.filter(
+        reservas_id__in=reservas_activas
+    ).aggregate(Sum('monto'))['monto__sum'] or 0
+
+    total_reservas = reservas_list.count()
+    total_canceladas = reservas_list.filter(estado__iexact='Cancelada').count()
+    total_pendientes = reservas_list.filter(estado__iexact='Pendiente').count()
+
+    if request.method == 'POST' and 'enviar_reporte' in request.POST:
+        correo_destino = request.POST.get('correo_destino')
+        
+        if correo_destino:
+            asunto = f"Reporte de Reservas Walena Hotel ({fecha_inicio} al {fecha_fin})"
+
+            texto_plano = (
+                f"--- REPORTE FINANCIERO Y DE RESERVAS ---\n\n"
+                f"Período evaluado: Desde {fecha_inicio} hasta {fecha_fin}\n"
+                f"Total Recaudado Real: ${total_recaudado:,.2f}\n"
+                f"Total de Reservas: {total_reservas}\n"
+                f"Canceladas: {total_canceladas} | Pendientes: {total_pendientes}\n"
+            )
+
+            contexto = {
+                'fecha_inicio': fecha_inicio,
+                'fecha_fin': fecha_fin,
+                'total_recaudado': total_recaudado,
+                'total_reservas': total_reservas,
+                'total_canceladas': total_canceladas,
+                'total_pendientes': total_pendientes,
+            }
+
+            html_content = render_to_string('gerente/correo_reporte.html', contexto)
+
+            api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+            sender = {"name": "Walena Hotel Gerencia", "email": "elviloria23@gmail.com"}
+            to = [{"email": correo_destino}]
+
+            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+                to=to,
+                sender=sender,
+                subject=asunto,
+                html_content=html_content,
+                text_content=texto_plano
+            )
+            
+            try:
+                api_instance.send_transac_email(send_smtp_email)
+                messages.success(request, f"¡Reporte enviado con éxito al correo {correo_destino}!")
+            except ApiException as e:
+                messages.error(request, f"Error al enviar el reporte: {e}")
+                
+            url_destino = f"{request.path}?fecha_inicio={fecha_inicio}&fecha_fin={fecha_fin}&estado={estado}"
+            return redirect(url_destino)
+
+    paginator = Paginator(reservas_list, 5)
+    page_number = request.GET.get('page')
+    reservas_page = paginator.get_page(page_number)
+
+    context = {
+        'reservas': reservas_page,
+        'total_recaudado': total_recaudado,
+        'total_reservas': total_reservas,
+        'total_canceladas': total_canceladas,
+        'total_pendientes': total_pendientes,
+    }
+    return render(request, 'gerente/reportes.html', context)
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_configuracion(request):
+    config, created = HotelConfig.objects.get_or_create(id=1)
+
+    if request.method == 'POST':
+        config.nombre = request.POST.get('nombre')
+        config.municipio = request.POST.get('municipio')
+        config.direccion = request.POST.get('direccion')
+        config.telefono = request.POST.get('telefono')
+        config.email = request.POST.get('email')
+        config.save()
+        
+        messages.success(request, '¡La configuración se actualizó y se sincronizó en todo el sistema!')
+        return redirect('gerente_configuracion')
+
+    context = {
+        'config': config,
+    }
+    return render(request, 'gerente/configuracion.html', context)
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_tipos(request):
+    tipos = TipoHabitacion.objects.all()
+    
+    if request.method == 'POST':
+        nombre_tipo = request.POST.get('tipo')
+        if nombre_tipo:
+            TipoHabitacion.objects.get_or_create(nombre=nombre_tipo)
+            messages.success(request, "Tipo de habitación creado con éxito.")
+            return redirect('gerente_tipos')
+
+    return render(request, 'gerente/tipos.html', {'tipos': tipos})
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def eliminar_tipo_habitacion(request, pk):
+    if request.method == 'POST':
+        tipo = get_object_or_404(TipoHabitacion, pk=pk)
+        tipo.delete()
+        messages.success(request, "Tipo de habitación eliminado de la lista maestra.")
+    return redirect('gerente_tipos')
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_servicios(request):
+    edit_servicio = None
+    edit_id = request.GET.get('editar')
+
+    if edit_id:
+        try:
+            edit_servicio = Servicio.objects.get(id=edit_id, disponible=True)
+        except Servicio.DoesNotExist:
+            pass
+
+    if request.method == 'POST':
+        servicio_id = request.POST.get('servicio_id')
+        nombre = request.POST.get('nombre')
+        descripcion = request.POST.get('descripcion')
+        precio = request.POST.get('precio')
+        
+        if servicio_id:
+            try:
+                serv = Servicio.objects.get(id=servicio_id)
+                serv.nombre = nombre
+                serv.descripcion = descripcion
+                serv.precio = precio
+                serv.save()
+                messages.success(request, '¡Servicio actualizado exitosamente!')
+            except Servicio.DoesNotExist:
+                messages.error(request, 'El servicio no existe.')
+        else:
+            if nombre and precio:
+                Servicio.objects.create(
+                    nombre=nombre,
+                    descripcion=descripcion,
+                    precio=precio,
+                    disponible=True
+                )
+                messages.success(request, '¡Servicio registrado exitosamente!')
+        return redirect('gerente_servicios')
+
+    servicios_list = Servicio.objects.filter(disponible=True).order_by('id')
+    context = {
+        'servicios': servicios_list,
+        'edit_servicio': edit_servicio,
+    }
+    return render(request, 'gerente/servicios.html', context)
+
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_eliminar_servicio(request, pk):
+    try:
+        serv = Servicio.objects.get(id=pk)
+        serv.disponible = False
+        serv.save()
+        messages.success(request, '¡Servicio eliminado correctamente de la vista!')
+    except Servicio.DoesNotExist:
+        messages.error(request, 'El servicio no existe.')
+    return redirect('gerente_servicios')
+
+
+# ========================================
+# RECUPERAR CUENTA
+# ========================================
+
+def solicitar_recuperacion(request):
+    username_ingresado = ''
+    correo_ingresado = ''
+    
+    if request.method == 'POST':
+        username_ingresado = request.POST.get('username', '').strip()
+        correo_ingresado = request.POST.get('correo', '').strip()
+        
+        try:
+            user = User.objects.get(username__iexact=username_ingresado, email__iexact=correo_ingresado)
+            codigo = str(random.randint(100000, 999999))
+
+            request.session['reset_user_id'] = user.id
+            request.session['codigo_recuperacion'] = codigo
+            
+            send_mail(
+                'Código de Recuperación - Walena Hotel',
+                f'Hola {user.username}, tu código de verificación es: {codigo}',
+                settings.EMAIL_HOST_USER,
+                [correo_ingresado],
+                fail_silently=False,
+            )
+            
+            messages.success(request, '¡Código enviado con éxito a tu correo!')
+            return redirect('verificar_codigo_pass')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'El usuario y/o correo ingresados no se encuentran en el sistema.')
+            
+    context = {
+        'username_ingresado': username_ingresado,
+        'correo_ingresado': correo_ingresado,
+    }
+    return render(request, 'auth/paso1_solicitar.html', context)
+
+
+def verificar_codigo_pass(request):
+    user_id = request.session.get('reset_user_id')
+    codigo_guardado = request.session.get('codigo_recuperacion')
+    
+    if not user_id or not codigo_guardado:
+        return redirect('solicitar_recuperacion')
+        
+    if request.method == 'POST':
+        codigo_ingresado = request.POST.get('codigo', '').strip()
+        
+        if codigo_guardado == codigo_ingresado:
+            request.session['codigo_verificado'] = True
+            messages.success(request, '¡Código verificado con éxito! Ingresa tu nueva contraseña.')
+            return redirect('cambiar_password_final')
+        else:
+            messages.error(request, 'El código de verificación es incorrecto.')
+            
+    return render(request, 'auth/paso2_codigo.html')
+
+
+def cambiar_password_final(request):
+    user_id = request.session.get('reset_user_id')
+    codigo_verificado = request.session.get('codigo_verificado')
+    
+    if not user_id or not codigo_verificado:
+        return redirect('solicitar_recuperacion')
+        
+    user = User.objects.get(id=user_id)
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        correo = request.POST.get('correo')
+        pass1 = request.POST.get('password')
+        pass2 = request.POST.get('confirm_password')
+        
+        if username != user.username or correo != user.email:
+            messages.error(request, 'Los datos de usuario y correo no coinciden con la solicitud.')
+        elif pass1 != pass2:
+            messages.error(request, 'Las contraseñas ingresadas no coinciden.')
+        else:
+            user.set_password(pass1)
+            user.save()
+
+            request.session.pop('reset_user_id', None)
+            request.session.pop('codigo_recuperacion', None)
+            request.session.pop('codigo_verificado', None)
+            
+            messages.success(request, '¡Tu contraseña ha sido actualizada correctamente! Ya puedes iniciar sesión.')
+            return redirect('login')
+
+    context = {
+        'username_val': user.username,
+        'correo_val': user.email
+    }
+    return render(request, 'auth/paso3_cambiar.html', context)
+
+
+
+
+

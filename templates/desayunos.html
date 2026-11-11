@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de Desayunos - Walena Hotel</title>
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-body text-body">
+
+    {% include 'inc/nav.html' %}
+
+    <section class="py-5 bg-body shadow-sm border-bottom">
+        <div class="container">
+            <div class="row align-items-center g-4">
+
+                <div class="col-lg-5 text-center">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#modalMenuZoom" class="d-inline-block">
+                        <img src="{% static 'img/menu_desayuno_canva.png' %}" 
+                            alt="Menú de Desayunos Walena Hotel" 
+                            class="img-fluid rounded-4 shadow-sm border p-2 bg-body-secondary" 
+                            style="max-height: 480px; object-fit: contain; cursor: pointer;">
+                    </a>
+                    <small class="text-secondary d-block mt-2">
+                        <i class="bi bi-search"></i> Haz clic en la imagen para ampliar el menú
+                    </small>
+                </div>
+
+                <div class="col-lg-7">
+                    <span class="badge px-3 py-2 rounded-pill mb-2 fw-semibold badge-desayuno">
+                        <i class="bi bi-sun-fill me-1"></i> Incluido en tu Estancia
+                    </span>
+                    
+                    <h1 class="display-5 fw-bold mb-3 titulo-principal">
+                        Desayunos <span class="text-warning">Walena</span>
+                    </h1>
+                    
+                    <p class="lead text-secondary fs-6 mb-4">
+                        <strong>
+                            Comienza tu día en el Caribe con el sabor de nuestra tierra. Todos nuestros desayunos son preparados al instante con ingredientes frescos e incluyen café, 
+                            chocolate o té y jugo natural de la temporada.
+                        </strong>
+                    </p>
+
+                    <div class="alert alert-custom-horario border rounded-3 p-3 mb-4 d-flex align-items-center gap-3">
+                        <i class="bi bi-clock-history fs-3 text-warning"></i>
+                        <div>
+                            <strong class="d-block titulo-horario">Horario de Atención:</strong>
+                            <span class="text-secondary small">Todos los días de 6:30 AM a 9:00 AM en el Restaurante del Hotel.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="modalMenuZoom" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content bg-body border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-center p-3">
+                    <img src="{% static 'img/menu_desayuno_canva.png' %}" 
+                        class="img-fluid rounded-3" 
+                        style="max-height: 85vh; object-fit: contain;" 
+                        alt="Menú Ampliado">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/theme.js' %}"></script>
+</body>
+</html>

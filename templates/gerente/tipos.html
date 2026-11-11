@@ -1,0 +1,89 @@
+{% extends 'base_gerente.html' %}
+{% block title %}Tipos de Habitación - Walena Hotel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom border-secondary">
+    <h1 class="h2 fw-bold" style="color: #00334e !important;">Administrar tipos de Habitación</h1>
+    <button type="button" class="btn fw-bold px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCrearTipo" style="background-color: #f2c14e; color: #00334e; border-radius: 8px;">
+        <i class="bi bi-plus-lg me-1"></i> Nuevo tipo
+    </button>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="background-color: #00334e !important; border: 1px solid #004d73 !important;">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0" style="background-color: #00334e !important; color: #ffffff; border-color: #004d73;">
+                <thead style="background-color: #002233 !important; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                    <tr class="align-middle">
+                        <th class="py-3 px-4 bg-transparent text-warning text-nowrap" style="width: 80px;">#</th>
+                        <th class="bg-transparent text-warning text-nowrap">Nombre de la Categoría / Tipo</th>
+                        <th class="text-end px-4 bg-transparent text-warning text-nowrap">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="border-top-0" style="background-color: #00334e !important;">
+                    {% for t in tipos %}
+                    <tr style="background-color: #00334e !important; border-bottom: 1px solid #004d73;">
+                        <td class="py-3 px-4 bg-transparent">
+                            <span class="fw-bold text-warning">#{{ forloop.counter }}</span>
+                        </td>
+                        <td class="text-white fw-medium bg-transparent">
+                            {{ t.nombre }}
+                        </td>
+                        <td class="text-end px-4 bg-transparent">
+                            <div class="d-inline-flex gap-1">
+                                <form action="{% url 'eliminar_tipo_habitacion' t.id %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger px-2 py-1" title="Eliminar Tipo" onclick="return confirm('¿Estás seguro de eliminar este tipo? Las habitaciones existentes no se eliminarán.');">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center text-white-50 py-5 bg-transparent">
+                            <i class="bi bi-tags fs-2 d-block mb-2 text-warning"></i>
+                            No hay tipos de habitación registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCrearTipo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg" style="background-color: #00334e; color: #f8fafc; border: 1px solid #004d73 !important;">
+            <div class="modal-header border-bottom border-secondary" style="background-color: #002233;">
+                <h5 class="modal-title fw-bold text-white"><i class="bi bi-tags me-2 text-warning"></i> Nuevo Tipo de Habitación</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="tipo" class="form-label fw-semibold text-white-50 small">Nombre del Tipo / Categoría</label>
+                        <input type="text" class="form-control text-white border-secondary" id="tipo" name="tipo" required placeholder="Ej: Suite Deluxe con Vista al Mar" style="background-color: #002233;">
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-secondary" style="background-color: #002233;">
+                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn fw-bold btn-sm px-4" style="background-color: #f2c14e; color: #00334e;">Guardar Tipo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

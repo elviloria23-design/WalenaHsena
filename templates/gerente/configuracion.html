@@ -1,0 +1,61 @@
+{% extends 'base_gerente.html' %}
+{% block title %}Configuración - Walena Hotel{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column align-items-start mb-4 border-bottom border-secondary pb-3 gap-2">
+    <h2 class="fw-bold text-walena-dark mb-0">Configuración del Establecimiento</h2>
+    <span class="badge badge-walena-gold fs-6 px-3 py-2 rounded-3 shadow-sm">
+        <i class="bi bi-gear me-1"></i> Ajustes Generales
+    </span>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card border-0 shadow-lg rounded-4 p-4 bg-walena-dark border-walena">
+            <h5 class="fw-bold mb-4 text-walena-gold">
+                <i class="bi bi-building me-2"></i> Información Regional (La Guajira)
+            </h5>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-white">Nombre del Hotel</label>
+                        <input type="text" name="nombre" class="form-control form-control-walena py-2" value="{{ config.nombre }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-white">Municipio / Ubicación</label>
+                        <input type="text" name="municipio" class="form-control form-control-walena py-2" value="{{ config.municipio }}">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label small fw-semibold text-white">Dirección</label>
+                        <input type="text" name="direccion" class="form-control form-control-walena py-2" value="{{ config.direccion }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-white">Teléfono de Contacto</label>
+                        <input type="text" name="telefono" class="form-control form-control-walena py-2" value="{{ config.telefono }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-white">Correo Institucional</label>
+                        <input type="email" name="email" class="form-control form-control-walena py-2" value="{{ config.email }}">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-walena-gold fw-bold px-4 py-2 rounded-pill shadow-sm">
+                        <i class="bi bi-check-circle me-1"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
