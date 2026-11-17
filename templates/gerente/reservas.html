@@ -16,8 +16,14 @@
     <a href="{% url 'gerente_reservas' %}?estado=Pendiente" class="btn btn-walena-filter {% if estado_filtro == 'Pendiente' %}active{% endif %} rounded-pill px-3 py-1 small" data-text="Pendientes">
         <i class="bi bi-clock-history me-1"></i> Pendientes
     </a>
+    <a href="{% url 'gerente_reservas' %}?estado=Pago 50%" class="btn btn-walena-filter {% if estado_filtro == 'Pago 50%' %}active{% endif %} rounded-pill px-3 py-1 small" data-text="Pago 50%">
+        <i class="bi bi-cash-coin me-1"></i> Pago 50%
+    </a>
     <a href="{% url 'gerente_reservas' %}?estado=Confirmada" class="btn btn-walena-filter {% if estado_filtro == 'Confirmada' %}active{% endif %} rounded-pill px-3 py-1 small" data-text="Confirmadas">
         <i class="bi bi-check-circle me-1"></i> Confirmadas
+    </a>
+    <a href="{% url 'gerente_reservas' %}?estado=Completada" class="btn btn-walena-filter {% if estado_filtro == 'Completada' %}active{% endif %} rounded-pill px-3 py-1 small" data-text="Completadas">
+        <i class="bi bi-check2-all me-1"></i> Completadas
     </a>
     <a href="{% url 'gerente_reservas' %}?estado=Cancelada" class="btn btn-walena-filter {% if estado_filtro == 'Cancelada' %}active{% endif %} rounded-pill px-3 py-1 small" data-text="Canceladas">
         <i class="bi bi-x-circle me-1"></i> Canceladas
@@ -40,10 +46,10 @@
                 <thead class="bg-walena-darker fs-7 text-uppercase">
                     <tr class="align-middle">
                         <th class="py-3 px-4 bg-transparent text-walena-gold text-nowrap" style="width: 80px;">#ID</th>
-                        <th class="bg-transparent text-walena-gold text-nowrap">ID Huésped</th>
-                        <th class="bg-transparent text-walena-gold text-nowrap">ID Habitación</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap">Huésped</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap">Habitación</th>
                         <th class="bg-transparent text-walena-gold text-nowrap">Fechas (Check-in / Check-out)</th>
-                        <th class="bg-transparent text-walena-gold text-nowrap">Abono 50%</th>
+                        <th class="bg-transparent text-walena-gold text-nowrap">costo de habitacion</th>
                         <th class="text-end px-4 bg-transparent text-walena-gold text-nowrap">Estado</th>
                     </tr>
                 </thead>
@@ -72,7 +78,7 @@
                         </td>
                         
                         <td class="text-end px-4 bg-transparent">
-                            <span class="badge {% if reserva.estado == 'Confirmada' %}bg-success{% elif reserva.estado == 'Pendiente' %}bg-warning text-dark{% else %}bg-danger{% endif %} rounded-pill px-3 py-1">
+                            <span class="badge {% if reserva.estado == 'Confirmada' %}bg-success{% elif reserva.estado == 'Pago 50%' %}bg-info text-dark{% elif reserva.estado == 'Pendiente' %}bg-warning text-dark{% elif reserva.estado == 'Completada' %}bg-primary{% else %}bg-danger{% endif %} rounded-pill px-3 py-1">
                                 {{ reserva.estado }}
                             </span>
                         </td>

@@ -1740,3 +1740,258 @@ body {
     background-color: #0f172a !important;
     color: #f8fafc !important;
 }
+
+
+/* ==========================================
+   ESTILOS DEL PANEL DE RECEPCIÓN - WALENA HOTEL
+   ========================================== */
+:root {
+    --walena-dark: #0f172a;
+    --walena-darker: #090d16;
+    --walena-gold: #f2c14e;
+    --walena-card: #1e293b;
+}
+
+.body-recepcion {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--walena-dark);
+    color: #f8fafc;
+}
+
+.navbar-walena {
+    background-color: var(--walena-darker);
+    border-bottom: 1px solid rgba(242, 193, 78, 0.2);
+}
+
+.brand-subtitle-walena {
+    letter-spacing: 2px;
+    font-size: 0.65rem;
+}
+
+.text-walena-gold {
+    color: var(--walena-gold) !important;
+}
+
+.btn-walena-gold {
+    background-color: var(--walena-gold);
+    color: var(--walena-darker);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-walena-gold:hover {
+    background-color: #e0b03d;
+    color: var(--walena-darker);
+    transform: translateY(-1px);
+}
+
+.card-walena {
+    background-color: var(--walena-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+}
+
+.card-stat {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.card-stat:hover {
+    transform: translateY(-3px);
+}
+
+.card-stat::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+}
+
+.stat-llegadas::after { background-color: #38bdf8; }
+.stat-salidas::after { background-color: #fbbf24; }
+.stat-disponibles::after { background-color: #34d399; }
+.stat-ocupadas::after { background-color: #f87171; }
+
+.table-walena {
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.table-walena th {
+    background-color: var(--walena-darker);
+    color: var(--walena-gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 1rem;
+}
+
+.table-walena td {
+    padding: 1rem;
+    background-color: transparent;
+    color: #e2e8f0;
+}
+
+.table-walena.table-hover tbody tr:hover td {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: #fff;
+}
+
+.input-walena {
+    background-color: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+}
+
+.input-walena:focus {
+    background-color: rgba(15, 23, 42, 0.9);
+    border-color: var(--walena-gold);
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(242, 193, 78, 0.15);
+}
+
+.input-walena::placeholder {
+    color: #64748b;
+}
+
+.pagination-walena .page-link {
+    background-color: var(--walena-card);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.pagination-walena .page-item.active .page-link {
+    background-color: var(--walena-gold);
+    border-color: var(--walena-gold);
+    color: var(--walena-darker);
+    font-weight: bold;
+}
+
+.pagination-walena .page-link:hover {
+    background-color: rgba(242, 193, 78, 0.2);
+    color: var(--walena-gold);
+}
+
+
+/* ==========================================
+    CORRECCIÓN DE ALERTAS EN MODO OSCURO
+   ========================================== */
+.alert-success {
+    background-color: #064e3b !important;
+    border-color: #059669 !important;
+    color: #ecfdf5 !important;
+}
+.alert-warning {
+    background-color: #78350f !important;
+    border-color: #d97706 !important;
+    color: #fffbeb !important;
+}
+.alert-danger {
+    background-color: #7f1d1d !important;
+    border-color: #dc2626 !important;
+    color: #fef2f2 !important;
+}
+.alert-info {
+    background-color: #0c4a6e !important;
+    border-color: #0284c7 !important;
+    color: #f0f9ff !important;
+}
+
+/* ==========================================
+    GRILLA Y CONTENEDOR DE HABITACIONES
+   ========================================== */
+.row-habitaciones-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+    margin-bottom: 0 !important;
+}
+
+/* Aumentamos el ancho y alto de las tarjetas de habitaciones en recepción */
+.row-habitaciones-grid > div {
+    flex: 0 0 240px !important; /* Tarjetas más anchas (antes 160px) */
+    max-width: 240px !important;
+}
+
+/* Control estricto de los márgenes y rellenos de la tarjeta contenedora */
+.card-walena:has(.row-habitaciones-grid) {
+    margin-bottom: 1.5rem !important;
+}
+
+.card-walena:has(.row-habitaciones-grid) .card-body {
+    padding-bottom: 1rem !important;
+}
+
+/* Adaptación para dispositivos móviles */
+@media (max-width: 768px) {
+    .row-habitaciones-grid > div {
+        flex: 0 0 calc(50% - 0.5rem);
+        max-width: calc(50% - 0.5rem);
+    }
+}
+
+
+
+/* Imagen más grande y proporcionada dentro de la tarjeta */
+.habitacion-img-mini {
+    width: 100%;
+    height: 130px !important; /* Altura mayor para la foto */
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+
+/* ==========================================
+    MODO CLARO / OSCURO - PANEL DE RECEPCIÓN
+   ========================================== */
+
+/* Modo Claro específico para Recepción */
+[data-bs-theme="light"] .body-recepcion {
+    background-color: #f8f9fa !important;
+    color: #1a1a1a !important;
+}
+
+[data-bs-theme="light"] .card-walena {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    color: #1a1a1a !important;
+}
+
+[data-bs-theme="light"] .table-walena {
+    color: #1a1a1a !important;
+}
+
+[data-bs-theme="light"] .table-walena th {
+    background-color: #f1f5f9 !important;
+    color: #00334e !important;
+}
+
+[data-bs-theme="light"] .table-walena td {
+    color: #334155 !important;
+}
+
+[data-bs-theme="light"] .input-walena {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #00334e !important;
+}
+
+[data-bs-theme="light"] .input-walena::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Navbar adaptativo para recepción */
+[data-bs-theme="light"] .navbar-walena {
+    background-color: #00334e !important;
+    border-bottom: 1px solid rgba(242, 193, 78, 0.4);
+}

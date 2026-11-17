@@ -139,12 +139,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # <-- Cámbialo de 'console' a 'smtp'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465  
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True  
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'elviloria23@gmail.com'
-EMAIL_HOST_PASSWORD = 'vjjrttwuewygtcwi'  # Tu contraseña de aplicación de 16 caracteres
-DEFAULT_FROM_EMAIL = 'elviloria23@gmail.com'  
-EMAIL_TIMEOUT = 10
+EMAIL_HOST_PASSWORD = 'pezawxsjvcpdhgnr'
+DEFAULT_FROM_EMAIL = 'Walena Hotel <elviloria23@gmail.com>'
+EMAIL_TIMEOUT = 15

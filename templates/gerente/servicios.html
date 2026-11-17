@@ -19,28 +19,42 @@
 
     <div class="col-lg-4">
         <div class="card border-0 shadow-lg rounded-4 p-4 bg-walena-dark border-walena text-white">
-            <h5 class="fw-bold text-walena-gold mb-3"><i class="bi bi-plus-circle me-2"></i> Nuevo Servicio</h5>
-            
-            <form method="POST">
+            <h5 class="fw-bold text-walena-gold mb-3">
+                <i class="bi {% if edit_servicio %}bi-pencil-square{% else %}bi-plus-circle{% endif %} me-2"></i> 
+                {% if edit_servicio %}Editar Servicio{% else %}Nuevo Servicio{% endif %}
+            </h5>
+
+            <form method="POST" autocomplete="off">
                 {% csrf_token %}
+                {% if edit_servicio %}
+                    <input type="hidden" name="servicio_id" value="{{ edit_servicio.id }}">
+                {% endif %}
+
                 <div class="mb-3">
                     <label for="nombre" class="form-label fw-semibold text-white small">Nombre del Servicio</label>
-                    <input type="text" class="form-control form-control-walena" id="nombre" name="nombre" required placeholder="Ej. Desayuno Buffet">
+                    <input type="text" class="form-control form-control-walena" id="nombre" name="nombre" value="{% if edit_servicio %}{{ edit_servicio.nombre }}{% endif %}" required placeholder="Ej. Desayuno Buffet">
                 </div>
                 
                 <div class="mb-3">
                     <label for="descripcion" class="form-label fw-semibold text-white small">Descripción</label>
-                    <textarea class="form-control form-control-walena" id="descripcion" name="descripcion" rows="3" placeholder="Detalles del servicio..."></textarea>
+                    <textarea class="form-control form-control-walena" id="descripcion" name="descripcion" rows="3" placeholder="Detalles del servicio...">{% if edit_servicio %}{{ edit_servicio.descripcion }}{% endif %}</textarea>
                 </div>
                 
                 <div class="mb-4">
                     <label for="precio" class="form-label fw-semibold text-white small">Precio ($)</label>
-                    <input type="number" step="0.01" class="form-control form-control-walena" id="precio" name="precio" required placeholder="0.00">
+                    <input type="number" step="0.01" class="form-control form-control-walena" id="precio" name="precio" value="{% if edit_servicio %}{{ edit_servicio.precio }}{% endif %}" required placeholder="0.00">
                 </div>
                 
-                <button type="submit" class="btn btn-walena-gold w-100 py-2 shadow-sm rounded-3">
-                    <i class="bi bi-check-lg me-1"></i> Guardar Servicio
-                </button>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-walena-gold w-100 py-2 shadow-sm rounded-3">
+                        <i class="bi bi-check-lg me-1"></i> {% if edit_servicio %}Actualizar Servicio{% else %}Guardar Servicio{% endif %}
+                    </button>
+                    {% if edit_servicio %}
+                        <a href="{% url 'gerente_servicios' %}" class="btn btn-outline-secondary py-2 px-3" title="Cancelar edición">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    {% endif %}
+                </div>
             </form>
         </div>
     </div>
@@ -77,10 +91,10 @@
                                 </td>
                                 <td class="text-end px-4 bg-transparent">
                                     <div class="d-inline-flex gap-1">
-                                        <a href="#" class="btn btn-sm btn-outline-warning px-2 py-1" title="Editar Servicio">
+                                        <a href="{% url 'gerente_servicios' %}?editar={{ servicio.id }}" class="btn btn-sm btn-outline-warning px-2 py-1" title="Editar Servicio">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <form action="#" method="POST" class="d-inline">
+                                        <form action="{% url 'gerente_eliminar_servicio' servicio.id %}" method="POST" class="d-inline">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-sm btn-outline-danger px-2 py-1" title="Eliminar Servicio" onclick="return confirm('¿Estás seguro de eliminar este servicio?');">
                                                 <i class="bi bi-trash"></i>

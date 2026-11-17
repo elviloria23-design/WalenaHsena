@@ -37,7 +37,21 @@ from .views import (
     reserva_exitosa,
     enviar_correo_reserva,
     panel_recepcion,
-    cambiar_estado_reserva_recepcion
+    cambiar_estado_reserva_recepcion,
+    cambiar_estado_habitacion_recepcion,
+    crear_nota_recepcion,
+    alternar_estado_nota,
+    eliminar_nota_recepcion,
+    recepcion_servicios,
+    crear_servicio,
+    editar_servicio,
+    asignar_servicio_huesped,
+    procesar_checkout_y_factura,
+    ver_factura_recepcion,
+    reenviar_factura_correo,
+    eliminar_servicio,
+    reubicar_reserva,
+    cambiar_tema_usuario
 )
 
 urlpatterns = [
@@ -46,6 +60,7 @@ urlpatterns = [
     path('habitaciones/', catalogo_habitaciones, name='catalogo_habitaciones'),
     path('crearCuenta/', crear_cuenta, name='crear_cuenta'),
     path('hotel/', hotel_view, name='hotel'),
+    path('api/cambiar-tema/', cambiar_tema_usuario, name='cambiar_tema_usuario'),
     path('planes/', planes_view, name='planes'),
     path('desayunos/', desayunos_view, name='desayunos'),
     path('contactanos/', contactanos_view, name='contactanos'),
@@ -81,7 +96,7 @@ urlpatterns = [
     path('tipo-habitacion/eliminar/<int:pk>/', eliminar_tipo_habitacion, name='eliminar_tipo_habitacion'),
 
     path('gerente/servicios/', gerente_servicios, name='gerente_servicios'),
-    path('gerente/servicios/eliminar/<int:pk>/', gerente_eliminar_servicio, name='gerente_eliminar_servicio'),
+    path('gerente/servicios/eliminar/<int:servicio_id>/', gerente_eliminar_servicio, name='gerente_eliminar_servicio'),
 
     path('recuperar/paso-1/', solicitar_recuperacion, name='solicitar_recuperacion'),
     path('recuperar/paso-2/', verificar_codigo_pass, name='verificar_codigo_pass'),
@@ -95,7 +110,23 @@ urlpatterns = [
     path('recepcion/check-out/', panel_recepcion, name='lista_checkout'),
     path('recepcion/pagos/', panel_recepcion, name='gestion_pagos'),
     path('recepcion/check-in/<int:pk>/', panel_recepcion, name='registrar_checkin'),
-    path('recepcion/reserva/<int:reserva_id>/cambiar/<str:nuevo_estado>/', cambiar_estado_reserva_recepcion, name='cambiar_estado_recepcion'),
+    path('recepcion/reserva/<int:reserva_id>/estado/<str:nuevo_estado>/', cambiar_estado_reserva_recepcion, name='cambiar_estado_reserva_recepcion'),
+    path('recepcion/reserva/reubicar/<int:reserva_id>/', reubicar_reserva, name='reubicar_reserva'),
+    path('recepcion/habitacion/<int:habitacion_id>/estado/<str:nuevo_estado>/', cambiar_estado_habitacion_recepcion, name='cambiar_estado_habitacion_recepcion'),
+
+    path('recepcion/nota/crear/', crear_nota_recepcion, name='crear_nota_recepcion'),
+    path('recepcion/nota/<int:nota_id>/estado/', alternar_estado_nota, name='alternar_estado_nota'),
+    path('recepcion/nota/<int:nota_id>/eliminar/', eliminar_nota_recepcion, name='eliminar_nota_recepcion'),
+
+    path('recepcion/servicios/', recepcion_servicios, name='recepcion_servicios'),
+    path('recepcion/servicios/crear/', crear_servicio, name='crear_servicio'),
+    path('recepcion/servicios/editar/<int:servicio_id>/', recepcion_servicios, name='editar_servicio'),
+    path('recepcion/servicios/eliminar/<int:servicio_id>/', eliminar_servicio, name='eliminar_servicio'),
+    path('recepcion/servicios/asignar/', asignar_servicio_huesped, name='asignar_servicio_huesped'),
+
+    path('recepcion/checkout/<int:reserva_id>/', procesar_checkout_y_factura, name='procesar_checkout'),
+    path('recepcion/factura/<int:reserva_id>/', ver_factura_recepcion, name='ver_factura_recepcion'),
+    path('recepcion/factura/reenviar/<int:reserva_id>/', reenviar_factura_correo, name='reenviar_factura_correo'),
 ]
 
 if settings.DEBUG:

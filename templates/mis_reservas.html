@@ -83,7 +83,7 @@
                                         </div>
 
                                         <div class="ms-auto text-end">
-                                            <span class="badge {% if reserva.estado == 'Confirmada' %}bg-success{% elif reserva.estado == 'Pendiente' %}bg-warning text-dark{% else %}bg-danger{% endif %} px-3 py-2 fs-6 rounded-pill d-block mb-2 shadow-sm">
+                                            <span class="badge {% if reserva.estado == 'Confirmada' %}bg-success{% elif reserva.estado == 'Pago 50%' %}bg-info text-dark{% elif reserva.estado == 'Pendiente' %}bg-warning text-dark{% elif reserva.estado == 'Completada' %}bg-primary{% else %}bg-danger{% endif %} px-3 py-2 fs-6 rounded-pill d-block mb-2 shadow-sm">
                                                 {{ reserva.estado }}
                                             </span>
                                             
@@ -116,6 +116,11 @@
                                             <p class="card-text mb-1">
                                                 <i class="bi bi-tag-fill text-warning me-2"></i> <strong>Precio Total:</strong> <span class="text-success fw-bold">${{ reserva.precio_total }} COP</span>
                                             </p>
+                                            {% if reserva.estado == 'Pago 50%' and reserva.monto_abono_50 %}
+                                                <p class="card-text mb-1">
+                                                    <i class="bi bi-cash-coin text-info me-2"></i> <strong>Abono Realizado:</strong> <span class="text-info fw-bold">${{ reserva.monto_abono_50 }} COP</span>
+                                                </p>
+                                            {% endif %}
                                         </div>
                                     </div>
 

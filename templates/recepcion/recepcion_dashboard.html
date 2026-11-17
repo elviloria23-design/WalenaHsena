@@ -1,120 +1,497 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="{% if request.user.perfil.modo_oscuro %}dark{% else %}light{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Recepción - Walena Hotel</title>
-
-    <script>
-        (function() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-bs-theme', savedTheme);
-        })();
-    </script>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body class="bg-body text-body">
+<body class="body-recepcion">
 
-    {% include 'inc/nav.html' %}
+<nav class="navbar navbar-expand-lg navbar-dark navbar-walena sticky-top shadow-lg">
+    <div class="container-fluid px-4 py-2">
+        <div class="d-flex align-items-center gap-3 ms-md-3">
+            <a class="navbar-brand fw-bold d-flex align-items-center m-0" href="{% url 'panel_recepcion' %}">
+                <div class="bg-warning bg-opacity-10 p-1 rounded-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 52px; height: 52px;">
+                    <img src="{% static 'img/walenalogo.png' %}"  alt="Walena Hotel Logo" height="80" class="d-inline-block align-text-top">
+                </div>
+                <div class="ms-3">
+                    <span class="fs-5 tracking-wide text-white">Walena Hotel</span>
+                    <span class="d-block text-walena-gold fw-normal text-uppercase brand-subtitle-walena">Módulo de Recepción</span>
+                </div>
+            </a>
 
-    <div class="container py-5">
+            <a href="{% url 'recepcion_servicios' %}" class="btn btn-sm btn-outline-warning border-opacity-50 px-3 py-2 rounded-pill shadow-sm d-flex align-items-center gap-1">
+                <i class="bi bi-concierge-bell text-walena-gold"></i>
+                <span class="d-none d-lg-inline text-white fw-semibold">Gestión de Servicios</span>
+            </a>
+        </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-            <div>
-                <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">Panel de Operaciones</span>
-                <h2 class="fw-bold titulo-seccion">Módulo de Recepción</h2>
-                <p class="text-secondary small mb-0">Gestión de reservas, check-in, check-out y control de huéspedes.</p>
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-none d-md-flex align-items-center bg-dark bg-opacity-50 px-3 py-1 rounded-pill border border-secondary border-opacity-25 text-white-50 small">
+                <i class="bi bi-person-circle text-walena-gold me-2"></i> {{ request.user.username }}
             </div>
-            <div class="d-flex gap-2">
-                <a href="{% url 'crear_reserva_recepcion' %}" class="btn btn-warning text-dark fw-bold rounded-pill shadow-sm px-3">
-                    <i class="bi bi-plus-circle-fill me-1"></i> Nueva Reserva
+
+            <button id="theme-toggle" class="btn btn-theme-toggle shadow-sm" type="button" title="Cambiar modo claro/oscuro">
+                <i id="theme-icon" class="bi bi-sun-fill"></i>
+            </button>
+
+            {% if request.user.is_superuser %}
+                <a href="{% url 'gerente_dashboard' %}" class="btn btn-sm btn-walena-gold shadow-sm">
+                    <i class="bi bi-speedometer2 me-1"></i> Gerencia
                 </a>
-                <a href="{% url 'consultar_disponibilidad' %}" class="btn btn-outline-secondary fw-bold rounded-pill px-3">
-                    <i class="bi bi-search me-1"></i> Disponibilidad
-                </a>
+            {% endif %}
+            <a href="{% url 'home' %}" class="btn btn-sm btn-outline-light border-opacity-25">
+                <i class="bi bi-house me-1"></i> Sitio Web
+            </a>
+            <a href="{% url 'logout' %}" class="btn btn-sm btn-danger shadow-sm">
+                <i class="bi bi-box-arrow-right me-1"></i> Salir
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-4 py-4">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm rounded-4 mb-4" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill fs-5 me-2"></i>
+                    <div>{{ message }}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card card-walena card-stat stat-llegadas shadow-sm h-100">
+                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                    <div>
+                        <p class="text-secondary small mb-1 text-uppercase fw-semibold">Llegadas Hoy</p>
+                        <h2 class="fw-bold mb-0 text-info">{{ llegadas_hoy_count }}</h2>
+                    </div>
+                    <div class="bg-info bg-opacity-10 p-3 rounded-4 text-info">
+                        <i class="bi bi-box-arrow-in-right fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-walena card-stat stat-salidas shadow-sm h-100">
+                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                    <div>
+                        <p class="text-secondary small mb-1 text-uppercase fw-semibold">Salidas Hoy</p>
+                        <h2 class="fw-bold mb-0 text-warning">{{ salidas_hoy_count }}</h2>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-4 text-warning">
+                        <i class="bi bi-box-arrow-right fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-walena card-stat stat-disponibles shadow-sm h-100">
+                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                    <div>
+                        <p class="text-secondary small mb-1 text-uppercase fw-semibold">Hab. Disponibles</p>
+                        <h2 class="fw-bold mb-0 text-success">{{ habitaciones_disponibles }}</h2>
+                    </div>
+                    <div class="bg-success bg-opacity-10 p-3 rounded-4 text-success">
+                        <i class="bi bi-door-open fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-walena card-stat stat-ocupadas shadow-sm h-100">
+                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                    <div>
+                        <p class="text-secondary small mb-1 text-uppercase fw-semibold">Hab. Ocupadas</p>
+                        <h2 class="fw-bold mb-0 text-danger">{{ habitaciones_ocupadas }}</h2>
+                    </div>
+                    <div class="danger bg-opacity-10 p-3 rounded-4 text-danger">
+                        <i class="bi bi-door-closed fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-walena shadow-lg rounded-4 mb-4">
+        <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 p-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <h5 class="mb-0 fw-bold d-flex align-items-center">
+                <i class="bi bi-calendar2-check text-walena-gold me-2 fs-4"></i>Gestión de Reservas y Huéspedes
+            </h5>
+
+            <div class="d-flex flex-wrap gap-2" role="group">
+                <a href="{% url 'panel_recepcion' %}" class="btn btn-sm {% if not estado_filtro %}btn-walena-gold text-dark fw-bold{% else %}btn-outline-secondary{% endif %} rounded-3 px-3">Todas</a>
+                <a href="?estado=Pendiente" class="btn btn-sm {% if estado_filtro == 'Pendiente' %}btn-warning text-dark fw-bold{% else %}btn-outline-secondary{% endif %} rounded-3 px-3">Pendientes</a>
+                <a href="?estado=Pago 50%" class="btn btn-sm {% if estado_filtro == 'Pago 50%' %}btn-info text-dark fw-bold{% else %}btn-outline-secondary{% endif %} rounded-3 px-3">Pago 50%</a>
+                <a href="?estado=Confirmada" class="btn btn-sm {% if estado_filtro == 'Confirmada' %}btn-success fw-bold{% else %}btn-outline-secondary{% endif %} rounded-3 px-3">Check-In</a>
+                <a href="?estado=Completada" class="btn btn-sm {% if estado_filtro == 'Completada' %}btn-primary fw-bold{% else %}btn-outline-secondary{% endif %} rounded-3 px-3">Completadas</a>
+                <a href="?estado=Cancelada" class="btn btn-sm {% if estado_filtro == 'Cancelada' %}btn-danger fw-bold{% else %}btn-outline-secondary{% endif %} rounded-3 px-3">Canceladas</a>
             </div>
         </div>
 
-        <div class="row g-4 mb-5">
-            <div class="col-md-3 col-sm-6">
-                <div class="card border rounded-4 p-3 bg-body-tertiary h-100 shadow-sm text-center">
-                    <div class="display-6 text-warning mb-2"><i class="bi bi-calendar-check"></i></div>
-                    <h6 class="fw-bold">Reservas</h6>
-                    <p class="text-secondary small">Crear y modificar estancias de clientes.</p>
-                    <a href="{% url 'gestionar_reservas' %}" class="stretched-link"></a>
+        <div class="card-body p-4">
+            <form method="GET" class="row g-2 mb-4">
+                {% if estado_filtro %}
+                    <input type="hidden" name="estado" value="{{ estado_filtro }}">
+                {% endif %}
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0 text-secondary border-secondary border-opacity-25 rounded-start-3">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="q" value="{{ busqueda }}" class="form-control input-walena border-start-0 ps-0" placeholder="Buscar por nombre, apellido, cédula o número de habitación...">
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card border rounded-4 p-3 bg-body-tertiary h-100 shadow-sm text-center">
-                    <div class="display-6 text-success mb-2"><i class="bi bi-box-arrow-in-right"></i></div>
-                    <h6 class="fw-bold">Check-in</h6>
-                    <p class="text-secondary small">Registrar la llegada y entrega de habitación.</p>
-                    <a href="{% url 'lista_checkin' %}" class="stretched-link"></a>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-walena-gold">Filtrar</button>
                 </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card border rounded-4 p-3 bg-body-tertiary h-100 shadow-sm text-center">
-                    <div class="display-6 text-danger mb-2"><i class="bi bi-box-arrow-right"></i></div>
-                    <h6 class="fw-bold">Check-out</h6>
-                    <p class="text-secondary small">Gestionar salidas y cierre de estancias.</p>
-                    <a href="{% url 'lista_checkout' %}" class="stretched-link"></a>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card border rounded-4 p-3 bg-body-tertiary h-100 shadow-sm text-center">
-                    <div class="display-6 text-info mb-2"><i class="bi bi-cash-coin"></i></div>
-                    <h6 class="fw-bold">Pagos y Extras</h6>
-                    <p class="text-secondary small">Registrar abonos y servicios adicionales.</p>
-                    <a href="{% url 'gestion_pagos' %}" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
+            </form>
 
-        <div class="card border shadow-sm rounded-4 p-4 bg-body">
-            <h4 class="fw-bold titulo-seccion mb-3"><i class="bi bi-clock-history text-warning me-2"></i>Llegadas Previstas para Hoy</h4>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle text-body">
-                    <thead class="table-dark">
+            <div class="table-responsive rounded-3 border border-secondary border-opacity-25">
+                <table class="table table-walena table-hover align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th>Habitación</th>
+                            <th>#ID</th>
                             <th>Huésped</th>
-                            <th>Check-in</th>
-                            <th>Check-out</th>
+                            <th>Identificación / Tel.</th>
+                            <th>Habitación</th>
+                            <th>Fechas Estadía</th>
+                            <th>Total</th>
                             <th>Estado</th>
                             <th class="text-end">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for reserva in llegadas_hoy %}
+                        {% for r in reservas %}
                         <tr>
-                            <td><strong>#{{ reserva.habitacion.numero }}</strong> ({{ reserva.habitacion.tipo }})</td>
-                            <td>{{ reserva.huesped.nombre }} {{ reserva.huesped.apellido }}</td>
-                            <td>{{ reserva.checkin }}</td>
-                            <td>{{ reserva.checkout }}</td>
-                            <td><span class="badge bg-warning text-dark">{{ reserva.estado }}</span></td>
-                            <td class="text-end">
-                                <a href="{% url 'registrar_checkin' reserva.id %}" class="btn btn-sm btn-success rounded-pill px-3 fw-bold">
-                                    <i class="bi bi-check2-all me-1"></i> Check-in
-                                </a>
+                            <td class="fw-bold text-walena-gold">#{{ r.id }}</td>
+                            <td>
+                                <div class="fw-bold">{{ r.nombre }} {{ r.apellido }}</div>
+                                <div class="small text-secondary">{{ r.correo }}</div>
+                            </td>
+                            <td>
+                                <div><i class="bi bi-person-vcard text-walena-gold me-1"></i>{{ r.cedula }}</div>
+                                <div class="small text-secondary"><i class="bi bi-telephone me-1"></i>{{ r.telefono }}</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary bg-opacity-25 text-warning border border-warning border-opacity-25 px-2 py-1">Hab. #{{ r.habitacion.numero }}</span>
+                                <div class="small text-secondary mt-1">{{ r.habitacion.tipo }}</div>
+                            </td>
+                            <td>
+                                <div class="small"><strong>In:</strong> {{ r.checkin }}</div>
+                                <div class="small"><strong>Out:</strong> {{ r.checkout }}</div>
+                            </td>
+                            <td class="fw-bold text-success">${{ r.precio_total }}</td>
+                            <td>
+                                {% if r.estado == 'Pendiente' %}
+                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1">Pendiente</span>
+                                {% elif r.estado == 'Pago 50%' %}
+                                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1">Pago 50%</span>
+                                {% elif r.estado == 'Confirmada' %}
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">En Estadía</span>
+                                {% elif r.estado == 'Completada' %}
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">Completada</span>
+                                {% else %}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1">Cancelada</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end text-nowrap">
+                                {% if r.estado == 'Pendiente' %}
+                                    <div class="d-flex gap-1 justify-content-end flex-wrap">
+                                        <button type="button" class="btn btn-sm btn-outline-warning fw-semibold px-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalConflicto{{ r.id }}" title="Resolver conflicto de sobreventa reubicando">
+                                            <i class="bi bi-exclamation-triangle me-1"></i> Conflicto
+                                        </button>
+
+                                        <a href="{% url 'cambiar_estado_reserva_recepcion' r.id 'Pago 50%' %}" class="btn btn-sm btn-info text-dark fw-semibold px-2 shadow-sm" title="Registrar abono del 50%">
+                                            <i class="bi bi-cash-coin me-1"></i> Abono 50%
+                                        </a>
+                                        <a href="{% url 'cambiar_estado_reserva_recepcion' r.id 'Confirmada' %}" class="btn btn-sm btn-success fw-semibold px-2 shadow-sm" title="Check-in directo">
+                                            <i class="bi bi-check-circle me-1"></i> Check-In
+                                        </a>
+                                        <a href="{% url 'cambiar_estado_reserva_recepcion' r.id 'Cancelada' %}" class="btn btn-sm btn-outline-danger px-1" onclick="return confirm('¿Seguro que deseas cancelar esta reserva?');" title="Cancelar">
+                                            <i class="bi bi-x-circle"></i>
+                                        </a>
+                                    </div>
+
+                                    <div class="modal fade text-start" id="modalConflicto{{ r.id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content bg-body text-body border shadow-lg">
+                                                <div class="modal-header border-bottom">
+                                                    <h5 class="modal-title text-warning fw-bold">
+                                                        <i class="bi bi-shuffle me-2"></i> Reubicar Huésped (Conflicto)
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                
+                                                <form method="POST" action="{% url 'reubicar_reserva' r.id %}">
+                                                    {% csrf_token %}
+                                                    <div class="modal-body py-4">
+                                                        <p class="small text-muted mb-3">
+                                                            Huésped: <strong class="text-body">{{ r.nombre }} {{ r.apellido }}</strong><br>
+                                                            Habitación actual en conflicto: <strong class="text-danger">Hab. #{{ r.habitacion.numero }}</strong>
+                                                        </p>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold text-warning">Selecciona una nueva habitación disponible:</label>
+                                                            <!-- Forzamos el color del texto con style para asegurarnos de que se vea -->
+                                                            <select name="nueva_habitacion_id" class="form-select bg-body border-secondary shadow-sm" style="color: #212529 !important;" required>
+                                                                <option value="" style="color: #6c757d;">-- Elige una alternativa libre --</option>
+                                                                {% for hab in habitaciones %}
+                                                                    {% if hab.estado == 'Disponible' and hab.id != r.habitacion.id %}
+                                                                        <option value="{{ hab.id }}" style="color: #212529; background-color: #ffffff;">Hab. #{{ hab.numero }} - {{ hab.tipo }} (Piso {{ hab.piso }})</option>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="modal-footer border-top">
+                                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                                                        <button type="submit" class="btn btn-warning text-dark fw-bold btn-sm">
+                                                            <i class="bi bi-check-circle me-1"></i> Confirmar Reubicación
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {% elif r.estado == 'Pago 50%' %}
+                                    <a href="{% url 'cambiar_estado_reserva_recepcion' r.id 'Confirmada' %}" class="btn btn-sm btn-success fw-semibold px-2 shadow-sm" title="Completar pago y hacer Check-In">
+                                        <i class="bi bi-check-circle me-1"></i> Completar Pago / Check-In
+                                    </a>
+                                    <a href="{% url 'cambiar_estado_reserva_recepcion' r.id 'Cancelada' %}" class="btn btn-sm btn-outline-danger px-1" onclick="return confirm('¿Cancelar reserva?');" title="Cancelar">
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                {% elif r.estado == 'Confirmada' %}
+                                    <div class="d-flex gap-1 justify-content-end">
+                                        <a href="{% url 'procesar_checkout' r.id %}" class="btn btn-sm btn-primary fw-semibold px-2 shadow-sm" title="Registrar salida y generar factura automática">
+                                            <i class="bi bi-box-arrow-right me-1"></i> Check-Out
+                                        </a>
+                                    </div>
+                                {% elif r.estado == 'Completada' or r.estado == 'Check-Out' %}
+                                    <div class="d-flex gap-1 justify-content-end">
+                                        <a href="{% url 'ver_factura_recepcion' r.id %}" class="btn btn-sm btn-warning text-dark fw-bold px-3 py-1 shadow-sm">
+                                            <i class="bi bi-receipt me-1"></i> Ver Factura
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <span class="text-secondary small fst-italic">Sin acciones</span>
+                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">No hay llegadas previstas programadas para el día de hoy.</td>
+                            <td colspan="8" class="text-center py-5 text-secondary">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-walena-gold"></i>
+                                No se encontraron reservas registradas con este filtro.
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+
+            {% if reservas.has_other_pages %}
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <span class="text-secondary small">Página {{ reservas.number }} de {{ reservas.paginator.num_pages }}</span>
+                <nav>
+                    <ul class="pagination pagination-walena pagination-sm mb-0">
+                        {% if reservas.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page={{ reservas.previous_page_number }}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}">Anterior</a></li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-link">{{ reservas.number }}</span></li>
+                        {% if reservas.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ reservas.next_page_number }}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}">Siguiente</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
         </div>
     </div>
 
-    <!-- Bootstrap JS y Script de Tema -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/theme.js' %}"></script>
+    <div class="card card-walena card-walena-auto shadow-lg rounded-4 mb-5">
+        <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 p-4">
+            <h5 class="mb-0 fw-bold d-flex align-items-center">
+                <i class="bi bi-grid-3x3-gap text-walena-gold me-2 fs-4"></i>Estado Rápido de Habitaciones
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row-habitaciones-grid">
+                {% for hab in habitaciones %}
+                <div>
+                    <div class="card card-walena h-100 border {% if hab.estado == 'Disponible' %}border-success border-opacity-50{% elif hab.estado == 'Ocupada' %}border-danger border-opacity-50{% else %}border-warning border-opacity-50{% endif %}">
+                        <div class="card-body p-3 text-center d-flex flex-column justify-content-between">
+                            <div>
+                                {% if hab.foto1 %}
+                                    <img src="{{ hab.foto1.url }}" alt="Habitación {{ hab.numero }}" class="habitacion-img-mini">
+                                {% endif %}
+                                <h5 class="fw-bold mb-1 text-body">Hab. #{{ hab.numero }}</h5>
+                                <p class="small text-secondary mb-2 text-truncate">{{ hab.tipo }}</p>
+                                
+                                <div class="d-flex justify-content-center gap-2 mb-3">
+                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1" style="font-size: 0.75rem;">
+                                        <i class="bi bi-layers me-1"></i>Piso {{ hab.piso }}
+                                    </span>
+                                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1" style="font-size: 0.75rem;">
+                                        <i class="bi bi-people me-1"></i>Max. {{ hab.cap_max }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                {% if hab.estado == 'Disponible' %}
+                                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 w-100 mb-2 py-2">Disponible</span>
+                                {% elif hab.estado == 'Ocupada' %}
+                                    <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 w-100 mb-2 py-2">Ocupada</span>
+                                {% else %}
+                                    <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50 w-100 mb-2 py-2">{{ hab.estado }}</span>
+                                {% endif %}
+
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle w-100 py-1" type="button" data-bs-toggle="dropdown">
+                                        Modificar
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg border-secondary">
+                                        <li><a class="dropdown-item text-success small" href="{% url 'cambiar_estado_habitacion_recepcion' hab.id 'Disponible' %}"><i class="bi bi-dot"></i> Disponible</a></li>
+                                        <li><a class="dropdown-item text-danger small" href="{% url 'cambiar_estado_habitacion_recepcion' hab.id 'Ocupada' %}"><i class="bi bi-dot"></i> Ocupada</a></li>
+                                        <li><a class="dropdown-item text-warning small" href="{% url 'cambiar_estado_habitacion_recepcion' hab.id 'Mantenimiento' %}"><i class="bi bi-dot"></i> Mantenimiento</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-walena shadow-lg rounded-4 mb-5">
+        <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 p-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-1 text-body">
+                <i class="bi bi-journal-text text-warning-emphasis me-2"></i> Bitácora de Turno y Recordatorios
+            </h5>
+            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">
+                Entrega de Turno
+            </span>
+        </div>
+
+        <div class="card-body p-4">
+            <form method="POST" action="{% url 'crear_nota_recepcion' %}" class="mb-4">
+                {% csrf_token %}
+                <div class="mb-2">
+                    <textarea name="mensaje" rows="2" class="form-control input-walena" placeholder="Escribe un recordatorio o novedad para el siguiente recepcionista..." required></textarea>
+                </div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="urgente" name="urgente">
+                        <label class="form-check-label fw-semibold text-body" for="urgente">
+                            <i class="text-warning-emphasis">⚠️</i> Marcar como urgente
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-walena-gold px-4">
+                        <i class="bi bi-plus-circle me-1"></i> Guardar Apunte
+                    </button>
+                </div>
+            </form>
+
+            <div class="d-flex flex-column gap-2" style="max-height: 320px; overflow-y: auto;">
+                {% for nota in notas %}
+                    <div class="p-3 rounded-3 border {% if nota.resuelta %}border-secondary border-opacity-25 opacity-50{% elif nota.importante %}border-warning bg-warning bg-opacity-10{% else %}border-secondary border-opacity-25 bg-body-tertiary{% endif %} d-flex justify-content-between align-items-start gap-3">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="fw-bold small text-walena-gold">
+                                    <i class="bi bi-person-badge me-1"></i>{{ nota.autor.username }}
+                                </span>
+                                <span class="text-secondary" style="font-size: 0.75rem;">
+                                    • {{ nota.fecha_creacion|date:"d M, h:i A" }}
+                                </span>
+                                {% if nota.importante and not nota.resuelta %}
+                                    <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">URGENTE</span>
+                                {% endif %}
+                                {% if nota.resuelta %}
+                                    <span class="badge bg-success bg-opacity-25 text-success" style="font-size: 0.65rem;">Revisado</span>
+                                {% endif %}
+                            </div>
+                            <p class="mb-0 small {% if nota.resuelta %}text-decoration-line-through{% endif %}">
+                                {{ nota.mensaje }}
+                            </p>
+                        </div>
+
+                        <div class="d-flex gap-1 flex-shrink-0">
+                            <a href="{% url 'alternar_estado_nota' nota.id %}" class="btn btn-sm {% if nota.resuelta %}btn-outline-secondary{% else %}btn-outline-success{% endif %}" title="{% if nota.resuelta %}Marcar como pendiente{% else %}Marcar como leído/resuelto{% endif %}">
+                                <i class="bi bi-check2-all"></i>
+                            </a>
+                            <a href="{% url 'eliminar_nota_recepcion' nota.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar este apunte?');" title="Eliminar apunte">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-journal-check fs-1 text-secondary opacity-75 d-block mb-2"></i>
+                        <p class="text-muted mb-0">No hay novedades ni recordatorios registrados en este turno.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS y Script de Alternancia de Tema -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const htmlElement = document.documentElement;
+
+    // Actualizar icono inicial según lo que renderizó Django desde la BD
+    const currentTheme = htmlElement.getAttribute('data-bs-theme');
+    updateIcon(currentTheme);
+
+    themeToggle.addEventListener('click', () => {
+        let theme = htmlElement.getAttribute('data-bs-theme');
+        let newTheme = theme === 'dark' ? 'light' : 'dark';
+        
+        // Cambiar visualmente al instante en la pantalla
+        htmlElement.setAttribute('data-bs-theme', newTheme);
+        updateIcon(newTheme);
+
+        // Enviar la petición al backend de Django para guardarlo en la cuenta del usuario
+        fetch("{% url 'cambiar_tema_usuario' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Tema actualizado en la cuenta:', data.modo_oscuro);
+        })
+        .catch(error => console.error('Error al guardar tema:', error));
+    });
+
+    function updateIcon(theme) {
+        if (theme === 'dark') {
+            themeIcon.className = 'bi bi-sun-fill';
+        } else {
+            themeIcon.className = 'bi bi-moon-fill';
+        }
+    }
+</script>
 </body>
 </html>

@@ -7,6 +7,7 @@ class TipoHabitacion(models.Model):
     def __str__(self):
         return self.nombre
 
+
 class Habitacion(models.Model):
     numero = models.IntegerField()
     piso = models.IntegerField()
@@ -107,6 +108,7 @@ class usuario(models.Model):
         db_table = 'usuario'
         managed = False
 
+
 class HotelConfig(models.Model):
     nombre = models.CharField(max_length=100, default="Walena Hotel")
     municipio = models.CharField(max_length=100, default="Riohacha, La Guajira, Colombia")
@@ -116,3 +118,38 @@ class HotelConfig(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
+class NotaRecepcion(models.Model):
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    mensaje = models.TextField()
+    importante = models.BooleanField(default=False)
+    resuelta = models.BooleanField(default=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-fecha_creacion']
+
+    def __str__(self):
+        return f"Nota de {self.autor.username} - {self.fecha_creacion.strftime('%d/%m %H:%M')}"
+
+
+class DetalleConsumo(models.Model):
+    reserva = models.ForeignKey(reservas, on_delete=models.CASCADE, db_column='reservas_id')
+    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE, db_column='servicio_id')
+    cantidad = models.IntegerField(default=1)
+    precio_aplicado = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'detalle_consumo'
+
+
+class PerfilUsuario(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
+    modo_oscuro = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Perfil de {self.user.username}"
+
