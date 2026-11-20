@@ -19,12 +19,13 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+import os
 
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 
 configuration = sib_api_v3_sdk.Configuration()
-configuration.api_key['api-key'] = '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'
+configuration.api_key['api-key'] = os.environ.get("SENDINBLUE_API_KEY", "")
 
 
 # ==========================================
