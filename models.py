@@ -3,7 +3,10 @@ from django.contrib.auth.models import User
 
 class TipoHabitacion(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
-    
+
+    class Meta:
+        app_label = 'hotel_walena'
+
     def __str__(self):
         return self.nombre
 
@@ -23,8 +26,7 @@ class Habitacion(models.Model):
     foto4 = models.ImageField(upload_to='habitaciones/', blank=True, null=True)
 
     class Meta:
-        db_table = 'habitaciones'
-        managed = False
+        app_label = 'hotel_walena'
 
 
 class huespedes(models.Model):
@@ -36,8 +38,7 @@ class huespedes(models.Model):
     es_corporativo = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'huespedes'
-        managed = False
+        app_label = 'hotel_walena'
 
 
 class consumo(models.Model):
@@ -48,8 +49,7 @@ class consumo(models.Model):
     fecha_registro = models.DateTimeField()
 
     class Meta:
-        db_table = 'detalle_consumo'
-        managed = False
+        app_label = 'hotel_walena'
 
 
 class pagos(models.Model):
@@ -60,8 +60,7 @@ class pagos(models.Model):
     fecha_pago = models.DateTimeField()
 
     class Meta:
-        db_table = 'pagos'
-        managed = False
+        app_label = 'hotel_walena'
 
 
 class reservas(models.Model):
@@ -83,8 +82,7 @@ class reservas(models.Model):
     telefono = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = 'reservas'
+        app_label = 'hotel_walena'
 
 
 class Servicio(models.Model):
@@ -92,6 +90,9 @@ class Servicio(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     disponible = models.BooleanField(default=True)
+
+    class Meta:
+        app_label = 'hotel_walena'
 
     def __str__(self):
         return self.nombre
@@ -106,8 +107,7 @@ class usuario(models.Model):
     codigo_recuperacion = models.CharField(max_length=6, blank=True, null=True)
 
     class Meta:
-        db_table = 'usuario'
-        managed = False
+        app_label = 'hotel_walena'
 
 
 class HotelConfig(models.Model):
@@ -116,6 +116,9 @@ class HotelConfig(models.Model):
     direccion = models.CharField(max_length=200, default="Calle 14b Bis # 15-05")
     telefono = models.CharField(max_length=50, default="+57 300 123 4567")
     email = models.EmailField(default="contacto@walenahotel.com")
+
+    class Meta:
+        app_label = 'hotel_walena'
 
     def __str__(self):
         return self.nombre
@@ -129,7 +132,7 @@ class NotaRecepcion(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-fecha_creacion']
+        app_label = 'hotel_walena'
 
     def __str__(self):
         return f"Nota de {self.autor.username} - {self.fecha_creacion.strftime('%d/%m %H:%M')}"
@@ -143,13 +146,15 @@ class DetalleConsumo(models.Model):
     fecha_registro = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        managed = False
-        db_table = 'detalle_consumo'
+        app_label = 'hotel_walena'
 
 
 class PerfilUsuario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
     modo_oscuro = models.BooleanField(default=True)
+
+    class Meta:
+        app_label = 'hotel_walena'
 
     def __str__(self):
         return f"Perfil de {self.user.username}"
@@ -163,6 +168,9 @@ class Plan(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     imagen = models.ImageField(upload_to='planes/', blank=True, null=True)
     disponible = models.BooleanField(default=True)
+
+    class Meta:
+        app_label = 'hotel_walena'
 
     def lista_beneficios(self):
         return [linea.strip() for linea in self.incluye.splitlines() if linea.strip()]
