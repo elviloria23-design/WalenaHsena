@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import usuario, reservas, pagos, Habitacion, Servicio, HotelConfig, TipoHabitacion, huespedes, NotaRecepcion, DetalleConsumo, PerfilUsuario, Plan
-from .forms import ReservaForm
+from models import usuario, reservas, pagos, Habitacion, Servicio, HotelConfig, TipoHabitacion, huespedes, NotaRecepcion, DetalleConsumo, PerfilUsuario, Plan
+from forms import ReservaForm
 from django.db.models import Q, Count, Sum
 from datetime import datetime
 import random
