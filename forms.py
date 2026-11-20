@@ -1,5 +1,5 @@
 from django import forms
-from .models import reservas
+from models import reservas
 
 class ReservaForm(forms.ModelForm):
     checkin = forms.DateField(
