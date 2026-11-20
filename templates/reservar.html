@@ -43,46 +43,47 @@
                     
                     <div id="carruselHabitacion" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-indicators">
-                            <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Foto 1"></button>
-                            <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="1" aria-label="Foto 2"></button>
-                            <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="2" aria-label="Foto 3"></button>
-                            <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="3" aria-label="Foto 4"></button>
+                            {% if habitacion.foto1 %}
+                                <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Foto 1"></button>
+                            {% endif %}
+                            {% if habitacion.foto2 %}
+                                <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="{% if habitacion.foto1 %}1{% else %}0{% endif %}" aria-label="Foto 2"></button>
+                            {% endif %}
+                            {% if habitacion.foto3 %}
+                                <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="2" aria-label="Foto 3"></button>
+                            {% endif %}
+                            {% if habitacion.foto4 %}
+                                <button type="button" data-bs-target="#carruselHabitacion" data-bs-slide-to="3" aria-label="Foto 4"></button>
+                            {% endif %}
                         </div>
 
                         <div class="carousel-inner">
+                            {% if habitacion.foto1 %}
                             <div class="carousel-item active">
-                                {% if habitacion.foto1 %}
-                                    <img src="{{ habitacion.foto1.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto Principal" style="height: 320px; object-fit: cover;">
-                                {% else %}
-                                    <img src="{% static 'img/atardecer2.jpg' %}" class="d-block w-100 galeria-habitacion-img" alt="Vista Principal" style="height: 320px; object-fit: cover;">
-                                {% endif %}
+                                <img src="{{ habitacion.foto1.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto Principal" style="height: 320px; object-fit: cover;">
                             </div>
+                            {% endif %}
 
-                            <div class="carousel-item">
-                                {% if habitacion.foto2 %}
-                                    <img src="{{ habitacion.foto2.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto 2" style="height: 320px; object-fit: cover;">
-                                {% else %}
-                                    <img src="{% static 'img/Riohachaaccl.png' %}" class="d-block w-100 galeria-habitacion-img" alt="Interior Habitación" style="height: 320px; object-fit: cover;">
-                                {% endif %}
+                            {% if habitacion.foto2 %}
+                            <div class="carousel-item {% if not habitacion.foto1 %}active{% endif %}">
+                                <img src="{{ habitacion.foto2.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto 2" style="height: 320px; object-fit: cover;">
                             </div>
+                            {% endif %}
 
-                            <div class="carousel-item">
-                                {% if habitacion.foto3 %}
-                                    <img src="{{ habitacion.foto3.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto 3" style="height: 320px; object-fit: cover;">
-                                {% else %}
-                                    <img src="{% static 'img/atardecer2.jpg' %}" class="d-block w-100 galeria-habitacion-img" alt="Baño y Amenidades" style="height: 320px; object-fit: cover;">
-                                {% endif %}
+                            {% if habitacion.foto3 %}
+                            <div class="carousel-item {% if not habitacion.foto1 and not habitacion.foto2 %}active{% endif %}">
+                                <img src="{{ habitacion.foto3.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto 3" style="height: 320px; object-fit: cover;">
                             </div>
+                            {% endif %}
 
-                            <div class="carousel-item">
-                                {% if habitacion.foto4 %}
-                                    <img src="{{ habitacion.foto4.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto 4" style="height: 320px; object-fit: cover;">
-                                {% else %}
-                                    <img src="{% static 'img/atardecer2.jpg' %}" class="d-block w-100 galeria-habitacion-img" alt="Balcón / Vista al Mar" style="height: 320px; object-fit: cover;">
-                                {% endif %}
+                            {% if habitacion.foto4 %}
+                            <div class="carousel-item {% if not habitacion.foto1 and not habitacion.foto2 and not habitacion.foto3 %}active{% endif %}">
+                                <img src="{{ habitacion.foto4.url }}" class="d-block w-100 galeria-habitacion-img" alt="Foto 4" style="height: 320px; object-fit: cover;">
                             </div>
+                            {% endif %}
                         </div>
 
+                        {% if habitacion.foto2 or habitacion.foto3 or habitacion.foto4 %}
                         <button class="carousel-control-prev" type="button" data-bs-target="#carruselHabitacion" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Anterior</span>
@@ -91,6 +92,7 @@
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Siguiente</span>
                         </button>
+                        {% endif %}
                     </div>
 
                     <div class="card-body p-4">
@@ -98,7 +100,7 @@
                             {{ habitacion.tipo|default:"Habitación Walena" }} (#{{ habitacion.numero }})
                         </h4>
                         <p class="text-secondary small mb-3">
-                            Ubicada en el Piso {{ habitacion.piso }}. Capacidad máxima: <strong>{{ habitacion.cap_max }} personas</strong>.
+                            {{ habitacion.descripcion|default:"Habitación cómoda y equipada." }} Piso {{ habitacion.piso }}. Capacidad máxima: <strong>{{ habitacion.cap_max }} personas</strong>.
                         </p>
                         
                         <hr class="text-muted opacity-25 my-3">

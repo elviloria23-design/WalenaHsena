@@ -33,10 +33,10 @@
                     <h1 class="display-5 fw-bold mb-3 titulo-principal">
                         Realice sus planes con <span class="text-warning">Walena hotel</span>
                     </h1>
-                    
+
                     <p class="lead text-secondary fs-6 mb-4" style="text-align: justify;">
-                        Embárquate en una aventura inolvidable por la deslumbrante magia de La Guajira. Desde el encanto histórico y artesanal del Malecón de Riohacha hasta la inmensidad mística del Cabo de la Vela y Punta Gallinas. 
-                        Vive la calidez de la cultura Wayúu en sus rancherías, maravillate con los tonos rosados en el Santuario de Flamencos Rosados o desconéctate en las hermosas playas de Palomino. 
+                        Embárquate en una aventura inolvidable por la deslumbrante magia de La Guajira. Desde el encanto histórico y artesanal del Malecón de Riohacha hasta la inmensidad mística del Cabo de la Vela y Punta Gallinas.
+                        Vive la calidez de la cultura Wayúu en sus rancherías, maravillate con los tonos rosados en el Santuario de Flamencos Rosados o desconéctate en las hermosas playas de Palomino.
                         En Walena nos encargamos de que cada instante sea una experiencia única y segura.
                     </p>
 
@@ -62,88 +62,42 @@
             </div>
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-
+                {% for plan in planes %}
                 <div class="col">
                     <div class="card h-100 shadow-sm border rounded-4 overflow-hidden folleto-card bg-body">
                         <div class="position-relative">
-                            <img src="{% static 'img/atardecer2.jpg' %}" class="card-img-top" alt="Cabo de la Vela" style="height: 220px; object-fit: cover;">
-                            <span class="badge bg-dark position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill opacity-90 border border-secondary">2 Días / 1 Noche</span>
+                            {% if plan.imagen %}
+                                <img src="{{ plan.imagen.url }}" class="card-img-top" alt="{{ plan.nombre }}" style="height: 220px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'img/atardecer2.jpg' %}" class="card-img-top" alt="{{ plan.nombre }}" style="height: 220px; object-fit: cover;">
+                            {% endif %}
+                            <span class="badge bg-dark position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill opacity-90 border border-secondary">{{ plan.duracion }}</span>
                         </div>
                         <div class="card-body d-flex flex-column p-4">
-                            <h4 class="card-title fw-bold titulo-card">Cabo de la Vela Mágico</h4>
+                            <h4 class="card-title fw-bold titulo-card">{{ plan.nombre }}</h4>
                             <p class="card-text text-secondary small mb-3">
-                                Explora el Pilón de Azúcar, el Faro y atardeceres mágicos sobre las dunas doradas del desierto.
+                                {{ plan.descripcion }}
                             </p>
                             <ul class="list-unstyled small text-secondary mb-4">
-                                <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Transporte 4x4 especializado</li>
-                                <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Hospedaje en chinchorro/cama</li>
-                                <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Alimentación típica completa</li>
+                                {% for beneficio in plan.lista_beneficios %}
+                                    <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>{{ beneficio }}</li>
+                                {% endfor %}
                             </ul>
                             <div class="mt-auto d-flex align-items-center justify-content-between pt-3 border-top">
                                 <div>
                                     <span class="text-secondary small d-block">Desde</span>
-                                    <strong class="fs-5 text-warning">$350.000 COP</strong>
+                                    <strong class="fs-5 text-warning">${{ plan.precio|floatformat:0 }} COP</strong>
                                 </div>
-                                <a href="#" class="btn btn-warning text-dark rounded-pill px-4 fw-bold">Reservar Plan</a>
+                                <a href="{% url 'contactanos' %}" class="btn btn-warning text-dark rounded-pill px-4 fw-bold">Reservar Plan</a>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm border rounded-4 overflow-hidden folleto-card bg-body">
-                        <div class="position-relative">
-                            <img src="{% static 'img/atardecer2.jpg' %}" class="card-img-top" alt="Santuario de Flamencos" style="height: 220px; object-fit: cover;">
-                            <span class="badge bg-dark position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill opacity-90 border border-secondary">Pasadía (Full Day)</span>
-                        </div>
-                        <div class="card-body d-flex flex-column p-4">
-                            <h4 class="card-title fw-bold titulo-card">Santuario de Flamencos</h4>
-                            <p class="card-text text-secondary small mb-3">
-                                Paseo en cayuco artesanal por la laguna para avistamiento de aves rosadas y almuerzo en Camarones.
-                            </p>
-                            <ul class="list-unstyled small text-secondary mb-4">
-                                <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Guía nativo especializado</li>
-                                <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Recorrido en barca ecológica</li>
-                                <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Almuerzo frente al mar</li>
-                            </ul>
-                            <div class="mt-auto d-flex align-items-center justify-content-between pt-3 border-top">
-                                <div>
-                                    <span class="text-secondary small d-block">Desde</span>
-                                    <strong class="fs-5 text-warning">$180.000 COP</strong>
-                                </div>
-                                <a href="#" class="btn btn-warning text-dark rounded-pill px-4 fw-bold">Reservar Plan</a>
-                            </div>
-                        </div>
-                    </div>
+                {% empty %}
+                <div class="col-12 w-100 d-flex justify-content-center align-items-center py-5 text-center text-secondary">
+                    <p class="mb-0">Próximamente publicaremos nuevos planes turísticos en La Guajira.</p>
                 </div>
-
-                <div class="col">
-                    <div class="card h-100 shadow-sm border rounded-4 overflow-hidden folleto-card bg-body">
-                        <div class="position-relative">
-                            <img src="{% static 'img/atardecer2.jpg' %}" class="card-img-top" alt="Punta Gallinas" style="height: 220px; object-fit: cover;">
-                            <span class="badge bg-dark position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill opacity-90 border border-secondary">3 Días / 2 Noches</span>
-                        </div>
-                        <div class="card-body d-flex flex-column p-4">
-                            <h4 class="card-title fw-bold titulo-card">Punta Gallinas Extremo</h4>
-                            <p class="card-text text-secondary small mb-3">
-                                Visita el punto más norte de Sudamérica, las dunas de Taroa deslizándote hacia el océano.
-                            </p>
-                            <ul class="list-unstyled small text-secondary mb-4">
-                                <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Vehículo 4x4 + Lancha</li>
-                                <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Dunas de Taroa y Bahía Hondita</li>
-                                <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Alojamiento Wayúu tradicional</li>
-                            </ul>
-                            <div class="mt-auto d-flex align-items-center justify-content-between pt-3 border-top">
-                                <div>
-                                    <span class="text-secondary small d-block">Desde</span>
-                                    <strong class="fs-5 text-warning">$720.000 COP</strong>
-                                </div>
-                                <a href="#" class="btn btn-warning text-dark rounded-pill px-4 fw-bold">Reservar Plan</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                {% endfor %}
             </div>
         </div>
     </section>

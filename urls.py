@@ -51,7 +51,9 @@ from .views import (
     reenviar_factura_correo,
     eliminar_servicio,
     reubicar_reserva,
-    cambiar_tema_usuario
+    cambiar_tema_usuario,
+    gerente_planes,
+    gerente_eliminar_plan
 )
 
 urlpatterns = [
@@ -84,6 +86,8 @@ urlpatterns = [
     path('gerente/habitacion/eliminar/<int:habitacion_id>/', eliminar_habitacion, name='eliminar_habitacion'),
 
     path('gerente/reservas/', gerente_reservas, name='gerente_reservas'),
+    path('gerente/planes/', gerente_planes, name='gerente_planes'),
+    path('gerente/planes/eliminar/<int:plan_id>/', gerente_eliminar_plan, name='gerente_eliminar_plan'),
     path('gerente/pagos/', gerente_pagos, name='gerente_pagos'),
 
     path('gerente/huespedes/', gerente_huespedes, name='gerente_huespedes'),

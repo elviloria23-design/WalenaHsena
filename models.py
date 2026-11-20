@@ -15,6 +15,7 @@ class Habitacion(models.Model):
     cap_max = models.IntegerField()
     precio_noche = models.DecimalField(max_digits=10, decimal_places=2)
     estado = models.CharField(max_length=50, default='Disponible')
+    descripcion = models.TextField(blank=True, null=True, default="Habitación cómoda y equipada.")
 
     foto1 = models.ImageField(upload_to='habitaciones/', blank=True, null=True)
     foto2 = models.ImageField(upload_to='habitaciones/', blank=True, null=True)
@@ -152,4 +153,21 @@ class PerfilUsuario(models.Model):
 
     def __str__(self):
         return f"Perfil de {self.user.username}"
+
+
+class Plan(models.Model):
+    nombre = models.CharField(max_length=150)
+    duracion = models.CharField(max_length=100, default="Pasadía (Full Day)")
+    descripcion = models.TextField()
+    incluye = models.TextField(blank=True, help_text="Escribe un beneficio por línea")
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    imagen = models.ImageField(upload_to='planes/', blank=True, null=True)
+    disponible = models.BooleanField(default=True)
+
+    def lista_beneficios(self):
+        return [linea.strip() for linea in self.incluye.splitlines() if linea.strip()]
+
+    def __str__(self):
+        return self.nombre
+
 

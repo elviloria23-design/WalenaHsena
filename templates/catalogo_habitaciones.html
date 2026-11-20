@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo de Habitaciones - Walena Hotel</title>
 
-    <!-- Script preventivo para evitar el destello blanco al cargar -->
     <script>
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
@@ -53,7 +52,7 @@
                     {% if hab.foto1 %}
                         <img src="{{ hab.foto1.url }}" class="card-img-top" alt="{{ hab.tipo }}" style="height: 220px; object-fit: cover;">
                     {% else %}
-                        <img src="{% static 'img/atardecer2.jpg' %}" class="card-img-top" alt="Habitación Walena" style="height: 220px; object-fit: cover;">
+                        <img src="{{ hab.foto1.url }}" class="card-img-top" alt="{{ hab.tipo }}" style="height: 220px; object-fit: cover;">
                     {% endif %}
                     
                     <div class="card-body d-flex flex-column p-4">
@@ -67,7 +66,7 @@
                         </div>
                         
                         <p class="card-text text-secondary small mb-3">
-                            Habitación ubicada en el Piso {{ hab.piso }}. Capacidad máxima: <strong>{{ hab.cap_max }} personas</strong>. Estado: 
+                            {{ hab.descripcion }} Estado: 
                             
                             {% if hab.estado|lower == 'activa' or hab.estado|lower == 'disponible' %}
                                 <span class="badge bg-success">{{ hab.estado }}</span>
@@ -87,7 +86,6 @@
                             <span title="Desayuno Incluido"><i class="bi bi-egg-fried fs-5 text-primary-walena"></i></span>
                         </div>
 
-                        <!-- 🛡️ VALIDACIÓN DE ESTADO PARA MOSTRAR U OCULTAR EL BOTÓN DE RESERVA -->
                         {% if user.is_authenticated %}
                             <a href="{% url 'reservar_habitacion' hab.id %}" class="btn btn-warning text-dark fw-bold w-100 py-2 rounded-pill">
                                 <i class="bi bi-calendar-check me-1"></i> Reservar Esta Habitación

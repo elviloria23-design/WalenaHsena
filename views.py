@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import usuario, reservas, pagos, Habitacion, Servicio, HotelConfig, TipoHabitacion, huespedes, NotaRecepcion, DetalleConsumo, PerfilUsuario
+from .models import usuario, reservas, pagos, Habitacion, Servicio, HotelConfig, TipoHabitacion, huespedes, NotaRecepcion, DetalleConsumo, PerfilUsuario, Plan
 from .forms import ReservaForm
 from django.db.models import Q, Count, Sum
 from datetime import datetime
@@ -560,9 +560,8 @@ def mis_reservas(request):
 def panel_recepcion(request):
     hoy = timezone.now().date()
     busqueda = request.GET.get('q', '').strip()
-    estado_filtro = request.GET.get('estado', '')
+    estado_filtro = request.GET.get('estado', '').strip()
 
-    # --- AQUÍ ESTABA FALTANDO DEFINIR LA VARIABLE ---
     perfil_usuario, created = PerfilUsuario.objects.get_or_create(user=request.user)
 
     llegadas_hoy_count = reservas.objects.filter(checkin=hoy, estado__in=['Pendiente', 'Confirmada']).count()
@@ -570,9 +569,9 @@ def panel_recepcion(request):
     habitaciones_disponibles = Habitacion.objects.filter(estado='Disponible').count()
     habitaciones_ocupadas = Habitacion.objects.filter(estado='Ocupada').count()
 
-    reservas_list = reservas.objects.select_related('habitacion', 'usuario').all().order_by('-id')
+    reservas_list = reservas.objects.all().order_by('-id')
 
-    if estado_filtro:
+    if estado_filtro and estado_filtro.lower() != 'todas':
         reservas_list = reservas_list.filter(estado__iexact=estado_filtro)
 
     if busqueda:
@@ -588,14 +587,14 @@ def panel_recepcion(request):
     reservas_paginadas = paginator.get_page(page_number)
 
     habitaciones_list = Habitacion.objects.all().order_by('numero')
-
     habitaciones_disponibles_lista = Habitacion.objects.filter(estado__iexact='Disponible').order_by('numero')
-
     notas = NotaRecepcion.objects.all()[:15]
 
     context = {
         'reservas': reservas_paginadas,
+        'lista_reservas': reservas_paginadas,
         'habitaciones': habitaciones_list,
+        'habitaciones_disponibles_lista': habitaciones_disponibles_lista,
         'busqueda': busqueda,
         'estado_filtro': estado_filtro,
         'llegadas_hoy_count': llegadas_hoy_count,
@@ -730,6 +729,7 @@ def eliminar_nota_recepcion(request, nota_id):
     messages.info(request, "Nota eliminada de la bitácora.")
     return redirect('panel_recepcion')
 
+
 @login_required(login_url='/login/')
 @user_passes_test(es_recepcionista_o_superior, login_url='/habitaciones/')
 def recepcion_servicios(request):
@@ -811,6 +811,7 @@ def recepcion_servicios(request, servicio_id=None):
         'servicio_editando': servicio_editando,
     }
     return render(request, 'recepcion/recepcion_servicios.html', context)
+
 
 @login_required(login_url='/login/')
 @user_passes_test(es_recepcionista_o_superior, login_url='/habitaciones/')
@@ -1008,6 +1009,85 @@ def gerente_dashboard(request):
 
     return render(request, 'gerente/dashboard.html', context)
 
+def planes_view(request):
+    planes = Plan.objects.filter(disponible=True).order_by('id')
+    return render(request, 'planes.html', {'planes': planes})
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_planes(request):
+    edit_plan = None
+    edit_id = request.GET.get('editar')
+
+    if edit_id:
+        try:
+            edit_plan = Plan.objects.get(id=edit_id, disponible=True)
+        except Plan.DoesNotExist:
+            pass
+
+    if request.method == 'POST':
+        plan_id = request.POST.get('plan_id')
+        nombre = request.POST.get('nombre', '').strip()
+        duracion = request.POST.get('duracion', '').strip() or "Pasadía (Full Day)"
+        descripcion = request.POST.get('descripcion', '').strip()
+        incluye = request.POST.get('incluye', '')
+
+        precio_str = request.POST.get('precio', '0').replace('.', '').replace(',', '.')
+        try:
+            precio = float(precio_str)
+        except ValueError:
+            precio = 0.0
+
+        imagen = request.FILES.get('imagen')
+
+        if plan_id:
+            try:
+                plan = Plan.objects.get(id=plan_id)
+                plan.nombre = nombre
+                plan.duracion = duracion
+                plan.descripcion = descripcion
+                plan.incluye = incluye
+                plan.precio = precio
+                if imagen:
+                    plan.imagen = imagen
+                plan.save()
+                messages.success(request, '¡Plan actualizado exitosamente!')
+            except Plan.DoesNotExist:
+                messages.error(request, 'El plan no existe.')
+        else:
+            if nombre:
+                Plan.objects.create(
+                    nombre=nombre,
+                    duracion=duracion,
+                    descripcion=descripcion,
+                    incluye=incluye,
+                    precio=precio,
+                    imagen=imagen,
+                    disponible=True
+                )
+                messages.success(request, '¡Plan registrado exitosamente!')
+        return redirect('gerente_planes')
+
+    planes_list = Plan.objects.filter(disponible=True).order_by('id')
+    context = {
+        'planes': planes_list,
+        'edit_plan': edit_plan,
+    }
+    return render(request, 'gerente/planes.html', context)
+
+@login_required(login_url='/login/')
+@user_passes_test(es_gerente, login_url='/habitaciones/')
+def gerente_eliminar_plan(request, plan_id):
+    if request.method == 'POST':
+        try:
+            plan = Plan.objects.get(id=plan_id)
+            plan.disponible = False
+            plan.save()
+            messages.success(request, '¡Plan eliminado exitosamente!')
+        except Plan.DoesNotExist:
+            messages.error(request, 'El plan no existe.')
+    return redirect('gerente_planes')
+
 
 @login_required(login_url='/login/')
 @user_passes_test(es_gerente, login_url='/habitaciones/')
@@ -1017,6 +1097,8 @@ def gerente_habitaciones(request):
         piso = request.POST.get('piso')
         tipo = request.POST.get('tipo')
         cap_max = request.POST.get('cap_max')
+
+        descripcion = request.POST.get('descripcion', '')
         
         precio_str = request.POST.get('precio_noche', '0')
         precio_limpio = precio_str.replace('.', '').replace(',', '.')
@@ -1040,6 +1122,7 @@ def gerente_habitaciones(request):
                 cap_max=cap_max,
                 precio_noche=precio_noche,
                 estado=estado,
+                descripcion=descripcion,
                 foto1=foto1,
                 foto2=foto2,
                 foto3=foto3,
@@ -1065,6 +1148,7 @@ def editar_habitacion(request, habitacion_id):
         habitacion.piso = request.POST.get('piso') or habitacion.piso
         habitacion.tipo = request.POST.get('tipo') or habitacion.tipo
 
+
         cap_max = request.POST.get('cap_max')
         if cap_max:
             habitacion.cap_max = cap_max
@@ -1075,6 +1159,8 @@ def editar_habitacion(request, habitacion_id):
 
         if request.POST.get('estado'):
             habitacion.estado = request.POST.get('estado')
+
+        
 
         if 'foto1' in request.FILES:
             habitacion.foto1 = request.FILES['foto1']
