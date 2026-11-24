@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña - Walena Hotel</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center vh-100">
+    <div class="card border-0 shadow-lg p-4 p-md-5 rounded-4 bg-white" style="max-width: 420px; width: 100%;">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold" style="color: #00334e;">Recuperar Contraseña</h3>
+            <p class="text-muted small">Paso 1: Identificación de la cuenta</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible fade show small" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="this.closest('.alert').remove()"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" autocomplete="off">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-secondary">Nombre de Usuario</label>
+                <input type="text" name="username" class="form-control bg-light border-0" value="{{ username_ingresado }}" placeholder="Ingresa tu usuario" required>
+            </div>
+            <div class="mb-4">
+                <label class="form-label small fw-bold text-secondary">Correo Electrónico</label>
+                <input type="email" name="correo" class="form-control bg-light border-0" value="{{ correo_ingresado }}" placeholder="tu-correo@ejemplo.com" 
+                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9@._-]/g, '').replace(/\s/g, '');" required>
+            </div>
+
+            <button type="submit" class="btn text-white w-100 py-2 rounded-3 fw-bold shadow-sm mb-3" style="background-color: #d97706; border: none;">
+                Enviar Código de Recuperación
+            </button>
+
+            <div class="text-center">
+                <a href="{% url 'login' %}" class="text-decoration-none small fw-semibold" style="color: #00334e;">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al Login
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

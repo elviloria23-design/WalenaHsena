@@ -1,0 +1,157 @@
+{% extends 'base_gerente.html' %}
+{% load static %}
+
+{% block title %}Gestión de Planes Turísticos - Walena Hotel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom border-secondary">
+    <h1 class="h2 fw-bold text-walena-dark">Gestión de Planes Turísticos</h1>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row g-4">
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-lg rounded-4 p-4 bg-walena-dark border-walena text-white">
+            <h5 class="fw-bold text-walena-gold mb-3">
+                <i class="bi {% if edit_plan %}bi-pencil-square{% else %}bi-plus-circle{% endif %} me-2"></i>
+                {% if edit_plan %}Editar Plan{% else %}Nuevo Plan Turístico{% endif %}
+            </h5>
+
+            <form method="POST" enctype="multipart/form-data" autocomplete="off">
+                {% csrf_token %}
+                {% if edit_plan %}
+                    <input type="hidden" name="plan_id" value="{{ edit_plan.id }}">
+                {% endif %}
+
+                <div class="mb-3">
+                    <label for="nombre" class="form-label fw-semibold text-white small">Nombre del Plan</label>
+                    <input type="text" class="form-control form-control-walena" id="nombre" name="nombre" value="{% if edit_plan %}{{ edit_plan.nombre }}{% endif %}" required placeholder="Ej. Cabo de la Vela Mágico">
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label for="duracion" class="form-label fw-semibold text-white small">Duración</label>
+                        <input type="text" class="form-control form-control-walena" id="duracion" name="duracion" value="{% if edit_plan %}{{ edit_plan.duracion }}{% endif %}" placeholder="Ej. 2 Días / 1 Noche">
+                    </div>
+                    <div class="col-6">
+                        <label for="precio" class="form-label fw-semibold text-white small">Precio ($)</label>
+                        <input type="text" class="form-control form-control-walena" id="precio" name="precio" value="{% if edit_plan %}{{ edit_plan.precio }}{% endif %}" required placeholder="350000">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label fw-semibold text-white small">Descripción</label>
+                    <textarea class="form-control form-control-walena" id="descripcion" name="descripcion" rows="3" placeholder="Detalles del tour o excursión..." required>{% if edit_plan %}{{ edit_plan.descripcion }}{% endif %}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="incluye" class="form-label fw-semibold text-white small">¿Qué incluye? (1 por línea)</label>
+                    <textarea class="form-control form-control-walena" id="incluye" name="incluye" rows="3" placeholder="Transporte 4x4 especializado&#10;Hospedaje en chinchorro/cama&#10;Alimentación típica completa">{% if edit_plan %}{{ edit_plan.incluye }}{% endif %}</textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="imagen" class="form-label fw-semibold text-white small">Imagen del Plan</label>
+                    <input type="file" class="form-control form-control-walena" id="imagen" name="imagen" accept="image/*">
+                    {% if edit_plan.imagen %}
+                        <div class="mt-2 d-flex align-items-center gap-2">
+                            <img src="{{ edit_plan.imagen.url }}" alt="{{ edit_plan.nombre }}" class="rounded-2 border border-secondary flex-shrink-0" style="width: 72px; height: 50px; object-fit: cover;">
+                            <span class="small text-white-50">Imagen actual</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-walena-gold w-100 py-2 shadow-sm rounded-3">
+                        <i class="bi bi-check-lg me-1"></i> {% if edit_plan %}Actualizar Plan{% else %}Guardar Plan{% endif %}
+                    </button>
+                    {% if edit_plan %}
+                        <a href="{% url 'gerente_planes' %}" class="btn btn-outline-secondary py-2 px-3" title="Cancelar edición">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-walena-dark border-walena">
+            <div class="card-header border-bottom border-secondary py-3 px-4 bg-walena-darker">
+                <h5 class="m-0 fw-bold text-white"><i class="bi bi-list-check me-2 text-walena-gold"></i> Planes Disponibles</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 text-white border-walena bg-walena-dark">
+                        <thead class="bg-walena-darker fs-7 text-uppercase">
+                            <tr class="align-middle">
+                                <th class="py-3 px-4 bg-transparent text-walena-gold text-nowrap">#</th>
+                                <th class="bg-transparent text-walena-gold text-nowrap">Plan</th>
+                                <th class="bg-transparent text-walena-gold text-nowrap">Duración</th>
+                                <th class="bg-transparent text-walena-gold text-nowrap">Precio</th>
+                                <th class="bg-transparent text-walena-gold text-nowrap">Estado</th>
+                                <th class="text-end px-4 bg-transparent text-walena-gold text-nowrap">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="border-top-0 bg-walena-dark">
+                            {% for plan in planes %}
+                            <tr class="bg-walena-dark border-bottom border-walena">
+                                <td class="py-3 px-4 bg-transparent text-nowrap">
+                                    <span class="fw-bold text-walena-gold">#{{ forloop.counter }}</span>
+                                </td>
+                                <td class="bg-transparent">
+                                    <div class="d-flex align-items-center gap-3">
+                                        {% if plan.imagen %}
+                                            <img src="{{ plan.imagen.url }}" alt="{{ plan.nombre }}" class="rounded-2 border border-secondary flex-shrink-0" style="width: 90px; height: 64px; object-fit: cover;">
+                                        {% else %}
+                                            <img src="{% static 'img/atardecer2.jpg' %}" alt="{{ plan.nombre }}" class="rounded-2 border border-secondary flex-shrink-0" style="width: 90px; height: 64px; object-fit: cover;">
+                                        {% endif %}
+                                        <div style="min-width: 180px; max-width: 340px;">
+                                            <div class="text-white fw-bold">{{ plan.nombre }}</div>
+                                            <div class="text-white-50 small text-truncate" title="{{ plan.descripcion }}">{{ plan.descripcion|default:"Sin descripción" }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-white-50 bg-transparent small text-nowrap">{{ plan.duracion }}</td>
+                                <td class="text-success fw-bold bg-transparent text-nowrap">${{ plan.precio }}</td>
+                                <td class="bg-transparent text-nowrap">
+                                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-2 py-1">Activo</span>
+                                </td>
+                                <td class="text-end px-4 bg-transparent text-nowrap">
+                                    <div class="d-inline-flex gap-1">
+                                        <a href="{% url 'gerente_planes' %}?editar={{ plan.id }}" class="btn btn-sm btn-outline-warning px-2 py-1" title="Editar Plan">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="{% url 'gerente_eliminar_plan' plan.id %}" method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger px-2 py-1" title="Eliminar Plan" onclick="return confirm('¿Estás seguro de eliminar este plan?');">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-white-50 py-5 bg-transparent">
+                                    <i class="bi bi-map fs-2 d-block mb-2 text-walena-gold"></i>
+                                    No hay planes activos registrados todavía.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

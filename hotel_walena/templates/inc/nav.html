@@ -1,0 +1,61 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-md navbar-dark navbar-walena shadow-sm" style="background-color: #00334e;">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+            <img src="{% static 'img/walenalogo.png' %}" alt="Walena Hotel Logo" height="110" class="d-inline-block align-text-top">
+        </a>
+
+        <button class="navbar-toggler" type="button" 
+                data-bs-toggle="collapse" 
+                data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" 
+                aria-expanded="false" 
+                aria-label="Abrir menú">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'hotel' %}">Hotel</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'catalogo_habitaciones' %}">Habitaciones</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'planes' %}">Planes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'desayunos' %}">Desayunos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'contactanos' %}">Contáctanos</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if user.is_authenticated %}
+                            Hola, {{ user.username }}
+                        {% else %}
+                            Cuenta
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {% if user.is_authenticated %}
+                            <li><a class="dropdown-item" href="{% url 'mis_reservas' %}">Mi Reserva</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                        {% else %}
+                            <li><a class="dropdown-item" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                            <li><a class="dropdown-item" href="{% url 'crear_cuenta' %}">Registrarse</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+                <button id="theme-toggle" class="btn btn-theme-toggle" type="button" aria-label="Cambiar tema">
+                    <i class="bi bi-sun-fill" id="theme-icon"></i>
+                </button>
+            </ul>
+        </div>
+    </div>
+</nav>

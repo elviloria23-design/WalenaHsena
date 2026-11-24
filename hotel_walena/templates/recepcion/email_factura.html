@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        .container { max-width: 650px; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px solid #d4af37; padding-bottom: 15px; margin-bottom: 20px; }
+        .header h2 { color: #d4af37; margin: 0; }
+        .info-section { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; color: #333; line-height: 1.5; }
+        .table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .table th, .table td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; font-size: 14px; }
+        .table th { background-color: #f8f9fa; color: #333; }
+        .totals-box { text-align: right; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+        .total-final { font-size: 18px; font-weight: bold; color: #28a745; }
+        .footer { text-align: center; font-size: 12px; color: #777; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Walena Hotel</h2>
+            <p>NIT: 901578910 | Módulo de Recepción</p>
+            <p><strong>FACTURA DE VENTA N° #HW-{{ reserva.id }}</strong></p>
+        </div>
+        
+        <div class="info-section">
+            <div>
+                <p><strong>Huésped:</strong> {{ reserva.nombre }} {{ reserva.apellido }}</p>
+                <p><strong>Correo:</strong> {{ reserva.correo }}</p>
+            </div>
+            <div style="text-align: right;">
+                <p><strong>Habitación:</strong> #{{ reserva.habitacion.numero }}</p>
+                <p><strong> Fechas:</strong> {{ reserva.checkin }} al {{ reserva.checkout }}</p>
+            </div>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th>Cant.</th>
+                    <th>P. Unit.</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Hospedaje / Estancia ({{ reserva.noches|default:"Estándar" }} Noches)</td>
+                    <td>1</td>
+                    <td>${{ total_hospedaje }}</td>
+                    <td>${{ total_hospedaje }}</td>
+                </tr>
+                {% for c in consumos %}
+                <tr>
+                    <td>{{ c.servicio.nombre }}</td>
+                    <td>{{ c.cantidad }}</td>
+                    <td>${{ c.precio_aplicado|default:c.servicio.precio }}</td>
+                    <td>${% widthratio c.cantidad 1 c.precio_aplicado|default:c.servicio.precio %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="totals-box">
+            <p>Subtotal Consumos: <strong>${{ total_consumos }}</strong></p>
+            <p>Hospedaje: <strong>${{ total_hospedaje }}</strong></p>
+            <p class="total-final">Total a Pagar: ${{ gran_total }}</p>
+        </div>
+
+        <div class="footer">
+            <p>¡Gracias por hospedarse en Walena Hotel! Este documento ha sido procesado automáticamente.</p>
+        </div>
+    </div>
+</body>
+</html>

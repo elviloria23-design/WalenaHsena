@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Servicios - Recepción Walena</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="body-recepcion">
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary border-opacity-25">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-concierge-bell text-walena-gold me-2"></i> Módulo de Servicios y Consumos</h2>
+            <p class="text-secondary small mb-0">Asigna servicios adicionales a los huéspedes y administra el catálogo del hotel.</p>
+        </div>
+        <a href="{% url 'panel_recepcion' %}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+            <i class="bi bi-arrow-left me-1"></i> Volver al Panel
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="card card-walena shadow-lg rounded-4 p-4 mb-4 border border-secondary border-opacity-25">
+                <h4 class="fw-bold mb-3 text-walena-gold"><i class="bi bi-cart-plus me-2"></i> Asignar a Huésped</h4>
+                <form method="POST" action="{% url 'asignar_servicio_huesped' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Seleccionar Huésped / Habitación</label>
+                        <select name="reserva_id" class="form-select input-walena" required>
+                            <option value="">-- Elige una estancia activa --</option>
+                            {% for r in reservas_activas %}
+                                <option value="{{ r.id }}">Hab. #{{ r.habitacion.numero }} - {{ r.nombre }} {{ r.apellido }} ({{ r.estado }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Servicio del Catálogo</label>
+                        <select name="servicio_id" class="form-select input-walena" required>
+                            <option value="">-- Elige un servicio --</option>
+                            {% for s in servicios %}
+                                <option value="{{ s.id }}">{{ s.nombre }} (${{ s.precio }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Cantidad</label>
+                        <input type="number" name="cantidad" value="1" min="1" class="form-control input-walena" required>
+                    </div>
+                    <button type="submit" class="btn btn-walena-gold w-100 fw-bold py-2 shadow-sm">
+                        <i class="bi bi-check2-circle me-1"></i> Registrar y Cargar a la Cuenta
+                    </button>
+                </form>
+            </div>
+
+            <div class="card card-walena shadow-lg rounded-4 p-4 border border-secondary border-opacity-25">
+                <h4 class="fw-bold mb-3 text-walena-gold">
+                    <i class="bi {% if servicio_editando %}bi-pencil-square{% else %}bi-plus-square{% endif %} me-2"></i> 
+                    {% if servicio_editando %}Editar Servicio: {{ servicio_editando.nombre }}{% else %}Crear Nuevo Servicio{% endif %}
+                </h4>
+                <form method="POST" action="{% if servicio_editando %}{% url 'editar_servicio' servicio_editando.id %}{% else %}{% url 'crear_servicio' %}{% endif %}" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Nombre del Servicio</label>
+                        <input type="text" name="nombre" class="form-control input-walena" value="{% if servicio_editando %}{{ servicio_editando.nombre }}{% endif %}" placeholder="Ej. Desayuno Americano, Spa, Minibar..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Precio (COP)</label>
+                        <input type="number" step="0.01" name="precio" class="form-control input-walena" value="{% if servicio_editando %}{{ servicio_editando.precio }}{% endif %}" placeholder="Ej. 25000" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Descripción Breve</label>
+                        <textarea name="descripcion" rows="2" class="form-control input-walena" placeholder="Detalles del servicio...">{% if servicio_editando %}{{ servicio_editando.descripcion }}{% endif %}</textarea>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-outline-warning w-100 fw-semibold py-2">
+                            <i class="bi bi-check-lg me-1"></i> {% if servicio_editando %}Actualizar Servicio{% else %}Guardar en el Catálogo{% endif %}
+                        </button>
+                        {% if servicio_editando %}
+                            <a href="{% url 'recepcion_servicios' %}" class="btn btn-outline-secondary py-2" title="Cancelar edición">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card card-walena shadow-lg rounded-4 p-4 mb-4 border border-secondary border-opacity-25">
+                <h4 class="fw-bold mb-3 text-walena-gold"><i class="bi bi-list-stars me-2"></i> Catálogo de Servicios del Hotel</h4>
+                <div class="table-responsive">
+                    <table class="table table-walena align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Servicio</th>
+                                <th>Precio</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in servicios %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ s.nombre }}</div>
+                                    <div class="small text-secondary">{{ s.descripcion|default:"Sin descripción" }}</div>
+                                </td>
+                                <td class="text-success fw-bold">${{ s.precio }}</td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-1">
+                                        <a href="{% url 'editar_servicio' s.id %}" class="btn btn-sm btn-outline-info px-2 py-1" title="Editar precio o nombre">
+                                            <i class="bi bi-pencil-square"></i> Editar
+                                        </a>
+                                        <form method="POST" action="{% url 'eliminar_servicio' s.id %}" onsubmit="return confirm('¿Seguro que deseas eliminar el servicio {{ s.nombre }}?');" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger px-2 py-1" title="Eliminar servicio">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-secondary py-3">No hay servicios creados todavía.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card card-walena shadow-lg rounded-4 p-4 border border-secondary border-opacity-25">
+                <h4 class="fw-bold mb-3 text-walena-gold"><i class="bi bi-clock-history me-2"></i> Últimos Servicios Asignados</h4>
+                <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                    <table class="table table-walena table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Hab.</th>
+                                <th>Huésped</th>
+                                <th>Servicio</th>
+                                <th>Cant.</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in asignaciones %}
+                            <tr>
+                                <td><span class="badge bg-warning bg-opacity-10 text-warning">#{{ item.reserva.habitacion.numero }}</span></td>
+                                <td>{{ item.reserva.nombre }}</td>
+                                <td>{{ item.servicio.nombre }}</td>
+                                <td>{{ item.cantidad }}</td>
+                                <td class="fw-bold text-success">${{ item.precio_total|default:item.servicio.precio }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-secondary py-3">No se han registrado consumos recientes.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
