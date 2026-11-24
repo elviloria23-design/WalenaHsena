@@ -1,4 +1,4 @@
-from .models import HotelConfig
+from models import HotelConfig
 
 def hotel_context(request):
 
