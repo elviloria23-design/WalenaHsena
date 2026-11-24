@@ -64,8 +64,8 @@ class pagos(models.Model):
 
 
 class reservas(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE, null=True, blank=True)
     adultos = models.IntegerField()
     ninos = models.IntegerField(default=0)
     precio_total = models.DecimalField(max_digits=10, decimal_places=2)
@@ -139,8 +139,8 @@ class NotaRecepcion(models.Model):
 
 
 class DetalleConsumo(models.Model):
-    reserva = models.ForeignKey(reservas, on_delete=models.CASCADE, db_column='reservas_id')
-    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE, db_column='servicio_id')
+    reserva = models.ForeignKey(reservas,on_delete=models.CASCADE,db_column='reservas_id',null=True,blank=True,)
+    servicio = models.ForeignKey(Servicio,on_delete=models.CASCADE,db_column='servicio_id',null=True,blank=True,)
     cantidad = models.IntegerField(default=1)
     precio_aplicado = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
