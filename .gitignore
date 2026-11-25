@@ -20,7 +20,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-mysql_completo.json/
+mysql_limpio.json
 # Entornos virtuales
 .env
 .venv
